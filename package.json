@@ -1,11 +1,10 @@
 {
-  "name": "luna-mystery-dungeon",
+  "name": "luna-eclipse-labyrinth",
   "version": "0.1.0",
   "private": true,
-  "description": "ルナの不思議なダンジョン - web game",
+  "description": "ルナと月蝕の迷宮 - web game",
   "scripts": {
     "dev": "python -m http.server 8080",
     "start": "python -m http.server 8080"
   }
 }
-
