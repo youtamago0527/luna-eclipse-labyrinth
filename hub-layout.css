@@ -23,3 +23,12 @@
 .command > i { width: 29px; height: 29px; }
 .command b { font-size: 12px; }
 @media (max-width: 370px) { .grid { column-gap: 82px; } .launch { width: 82px; height: 82px; } .command small { display: none; } }
+
+/* Reference composition: keep the fire/center clear for Luna's hub artwork. */
+.scene { top: 35%; right: auto; width: 190px; }
+.scene .dialogue { width: 190px; padding: 14px 28px 14px 16px; border-radius: 42px 42px 42px 8px; }
+.scene .dialogue span { white-space: pre-line; font-size: 13px; line-height: 1.7; }
+.widgets { top: 22%; }
+.record-card { width: 145px; }
+.quick-menu { gap: 7px; }
+@media (max-height: 760px) { .scene { top: 31%; } .widgets { top: 19%; } }
