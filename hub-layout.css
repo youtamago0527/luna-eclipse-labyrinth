@@ -40,3 +40,13 @@
   filter: drop-shadow(0 14px 24px rgba(0,0,0,.72));
 }
 @media (max-height: 760px) { .hub-luna { bottom: 15%; height: 63%; } }
+
+.image-command {
+  display: block; min-height: 0; padding: 0; overflow: visible;
+  border: 0; background: transparent; box-shadow: none; clip-path: none;
+}
+.image-command img {
+  display: block; width: 100%; height: auto; object-fit: contain;
+  pointer-events: none; user-select: none;
+}
+.image-command:active { transform: scale(.97); filter: brightness(1.08); }
