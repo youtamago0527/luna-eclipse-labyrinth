@@ -2,24 +2,57 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#080b18">
-  <meta name="description" content="月明かりに導かれ、入るたびに姿を変える迷宮へ。">
-  <title>ルナの不思議なダンジョン</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#020611">
+  <title>ルナの不思議なダンジョン｜拠点</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="title-screen">
-    <div class="moon" aria-hidden="true"></div>
-    <section class="title-card" aria-labelledby="game-title">
-      <p class="eyebrow">LUNA'S MYSTERY DUNGEON</p>
-      <h1 id="game-title"><span>ルナの</span>不思議なダンジョン</h1>
-      <p class="tagline">月明かりに導かれ、姿を変える迷宮へ。</p>
-      <button id="start-button" type="button">冒険をはじめる</button>
-      <p id="status" class="status" aria-live="polite">開発準備中</p>
+  <main id="game" class="game">
+    <img class="background" src="assets/hub/moon-ruins.png" alt="月夜の古城にある拠点">
+    <div class="shade"></div>
+
+    <header class="topbar">
+      <div class="crest">☾</div>
+      <div><small>MOONLIGHT WANDERER</small><h1>LUNA <span>ルナ</span></h1></div>
+      <button data-note="設定は今後追加します" aria-label="設定">⚙</button>
+    </header>
+
+    <section class="scene">
+      <p>THE FORGOTTEN HAVEN</p>
+      <h2>月影の拠点</h2>
+      <button id="dialogue" class="dialogue">
+        <b>LUNA</b><span id="dialogue-text">……月が、迷宮への道を照らしてる。</span><i>◆</i>
+      </button>
     </section>
+
+    <section class="controls" aria-label="拠点メニュー">
+      <div class="grid">
+        <button class="command" data-note="装備画面は次工程で追加します"><i>♜</i><span><b>装 備</b><small>EQUIPMENT</small></span></button>
+        <button class="command" data-note="持ち物画面は次工程で追加します"><i>◇</i><span><b>持ち物</b><small>INVENTORY</small></span></button>
+        <button class="command" data-note="倉庫画面は次工程で追加します"><i>▣</i><span><b>倉 庫</b><small>STORAGE</small></span></button>
+        <button class="command" data-note="記録画面は次工程で追加します"><i>✦</i><span><b>記 録</b><small>ARCHIVE</small></span></button>
+      </div>
+      <button id="launch" class="launch"><i>☾</i><span><b>迷宮へ</b><small>ENTER THE DUNGEON</small></span></button>
+    </section>
+
+    <nav class="nav">
+      <button class="active"><i>⌂</i>拠点</button>
+      <button data-note="迷宮記録は今後追加します"><i>⌘</i>迷宮記録</button>
+      <button data-note="図鑑は今後追加します"><i>▤</i>図鑑</button>
+      <button data-note="メニューは今後追加します"><i>☰</i>メニュー</button>
+    </nav>
+
+    <section id="ready" class="ready" aria-hidden="true">
+      <button id="close" class="close" aria-label="閉じる">×</button>
+      <p>DUNGEON SYSTEM</p><h2>迷宮入口</h2>
+      <div class="sheet"><img src="assets/dungeon/luna/source-sheet.png" alt="ルナのポリゴンドット絵仕様シート"></div>
+      <span>移動素材原本を配置済み。個別透過フレームの準備後、4方向グリッド移動へ接続します。</span>
+      <b class="badge">MOVEMENT FOUNDATION READY</b>
+    </section>
+    <div id="toast" class="toast" role="status"></div>
   </main>
-  <script src="main.js"></script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>
 
