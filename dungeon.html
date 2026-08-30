@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#02050d">
+  <title>ルナの不思議なダンジョン｜迷宮</title>
+  <link rel="stylesheet" href="dungeon.css">
+</head>
+<body>
+  <main class="dungeon-frame">
+    <header class="dungeon-hud">
+      <div class="hud-row">
+        <div class="floor-badge"><i>♜</i><span>月蝕迷宮</span><b>B--F</b></div>
+        <div class="hud-tools"><span>◆ <b>---</b></span><span>● <b>---</b></span><button id="map-toggle" aria-label="ミニマップ切替">⌘</button></div>
+      </div>
+      <div class="gauges" aria-label="仮ステータス表示">
+        <div><span>HP</span><i class="hp"></i><b>--/--</b></div>
+        <div><span>MP</span><i class="mp"></i><b>--/--</b></div>
+        <div><span>STATUS</span><i class="status"></i><b>---</b></div>
+      </div>
+    </header>
+
+    <section class="dungeon-stage">
+      <canvas id="dungeon-canvas" aria-label="ダンジョンテストマップ"></canvas>
+      <div class="stage-vignette"></div>
+      <div class="objective"><small>EXPLORATION</small><b>移動システム試験区画</b></div>
+      <div id="minimap" class="minimap"><header><span>迷宮マップ</span><b>TEST</b></header><canvas id="minimap-canvas"></canvas></div>
+      <div class="debug" id="debug">X: 1 / Y: 1<br>Direction: down<br>State: idle</div>
+    </section>
+
+    <footer class="controller">
+      <div class="log"><span>▤</span><b id="log-text">方向キー、WASD、またはパッドで移動できます。</b><small>LOG</small></div>
+      <div class="control-row">
+        <div class="dpad" aria-label="4方向移動パッド">
+          <button data-dir="up" class="up" aria-label="上へ移動">▲</button>
+          <button data-dir="left" class="left" aria-label="左へ移動">◀</button>
+          <button id="wait" class="wait" aria-label="待機">待機</button>
+          <button data-dir="right" class="right" aria-label="右へ移動">▶</button>
+          <button data-dir="down" class="down" aria-label="下へ移動">▼</button>
+        </div>
+        <div class="actions">
+          <div class="main-actions"><button disabled><i>†</i><b>短 剣</b><small>準備中</small></button><button disabled><i>✦</i><b>月光弾</b><small>準備中</small></button></div>
+          <div class="sub-actions"><button disabled>手元<small>準備中</small></button><button disabled>持ち物<small>準備中</small></button><button disabled>階段<small>準備中</small></button></div>
+        </div>
+      </div>
+      <div class="controller-foot"><a href="index.html">↩ 拠点へ戻る</a><span>AUTO MAP ON　⚙</span></div>
+    </footer>
+  </main>
+  <script type="module" src="js/dungeon/dungeon-ui.js"></script>
+</body>
+</html>
+
