@@ -42,7 +42,7 @@
 @media (max-height: 760px) { .hub-luna { bottom: 15%; height: 56.7%; } }
 
 .image-command {
-  display: block; min-height: 0; padding: 0; overflow: visible;
+  display: block; width: 90%; min-height: 0; padding: 0; overflow: visible;
   border: 0; background: transparent; box-shadow: none; clip-path: none;
 }
 .image-command img {
@@ -50,11 +50,16 @@
   pointer-events: none; user-select: none;
 }
 .image-command:active { transform: scale(.97); filter: brightness(1.08); }
+.image-command:nth-child(odd) { justify-self: start; }
+.image-command:nth-child(even) { justify-self: end; }
 
 .image-launch {
-  width: 188px; height: 188px; border: 0; background: transparent;
+  width: 214px; height: 214px; border: 0; background: transparent;
   filter: drop-shadow(0 0 15px rgba(56,189,248,.32)) drop-shadow(0 0 22px rgba(212,175,55,.34));
 }
 .image-launch img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none; }
 .image-launch:active { transform: translate(-50%,-50%) scale(.96); filter: brightness(1.08) drop-shadow(0 0 18px rgba(56,189,248,.4)); }
-@media (max-width: 370px) { .image-launch { width: 168px; height: 168px; } }
+@media (max-width: 370px) { .image-launch { width: 190px; height: 190px; } }
+
+.widgets { top: calc(env(safe-area-inset-top, 0px) + 76px); }
+@media (max-height: 760px) { .widgets { top: calc(env(safe-area-inset-top, 0px) + 70px); } }
