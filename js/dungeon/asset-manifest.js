@@ -1,2 +1,2 @@
-export const DUNGEON_ASSET_MANIFEST=Object.freeze({luna:{sourceSheet:'assets/dungeon/luna/source-sheet.png',frameSize:{width:32,height:32},directions:['down','left','right','up'],actions:{idle:{ready:false,framesByDirection:{}},walking:{ready:false,framesByDirection:{}}}}});
-
+const frames=(direction)=>[0,1,2,3].map(frame=>`assets/dungeon/luna/walking/${direction}/${frame}.png`);
+export const DUNGEON_ASSET_MANIFEST=Object.freeze({luna:{sourceSheet:'assets/dungeon/luna/source-sheet.png',frameSize:{width:92,height:122},directions:['down','left','right','up'],actions:{idle:{ready:true,framesByDirection:{down:[frames('down')[0]],left:[frames('left')[0]],right:[frames('right')[0]],up:[frames('up')[0]]}},walking:{ready:true,framesByDirection:{down:frames('down'),left:frames('left'),right:frames('right'),up:frames('up')}}}}});
