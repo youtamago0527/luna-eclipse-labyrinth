@@ -10,6 +10,7 @@
 </head>
 <body>
   <main id="game" class="game">
+    <audio id="hub-bgm" src="assets/audio/bgm/moonlit-sanctuary.mp3" preload="auto" loop></audio>
     <img class="background" src="assets/hub/moon-ruins.png" alt="月夜の古城にある拠点">
     <div class="shade"></div>
     <img class="hub-luna" src="assets/hub/characters/luna-hub-original.png" alt="焚火のそばに座るルナ">
@@ -17,7 +18,7 @@
     <header class="topbar">
       <div class="crest">☾</div>
       <div><small>MOONLIGHT WANDERER</small><h1>LUNA <span>ルナ</span></h1></div>
-      <button data-note="設定は今後追加します" aria-label="設定">⚙</button>
+      <div class="top-actions"><button id="bgm-toggle" aria-label="BGMを切り替える">♪</button><button data-note="設定は今後追加します" aria-label="設定">⚙</button></div>
     </header>
 
     <section class="scene">
