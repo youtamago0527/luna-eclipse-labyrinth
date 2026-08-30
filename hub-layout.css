@@ -32,3 +32,11 @@
 .record-card { width: 145px; }
 .quick-menu { gap: 7px; }
 @media (max-height: 760px) { .scene { top: 31%; } .widgets { top: 19%; } }
+
+.hub-luna {
+  position: absolute; z-index: -1; right: -5%; bottom: 16%;
+  width: 92%; height: 66%; object-fit: contain; object-position: right bottom;
+  pointer-events: none; user-select: none;
+  filter: drop-shadow(0 14px 24px rgba(0,0,0,.72));
+}
+@media (max-height: 760px) { .hub-luna { bottom: 15%; height: 63%; } }
