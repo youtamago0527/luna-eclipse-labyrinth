@@ -16,7 +16,7 @@ python -m http.server 8080
 2. このフォルダで次を実行します（URLは作成したリポジトリのものに置換）。
 
 ```powershell
-git remote add origin https://github.com/youtamago0527/luna-eclipse-labyrinth.git
+git remote add origin https://github.com/YOUR_ACCOUNT/luna-eclipse-labyrinth.git
 git push -u origin main
 ```
 
@@ -25,7 +25,7 @@ git push -u origin main
 GitHub Pagesを使う場合、リポジトリの **Settings → Pages** で `main` ブランチのルートを公開します。
 通常のURLは次の形になります。
 
-`https://youtamago0527.github.io/luna-eclipse-labyrinth/`
+`https://YOUR_ACCOUNT.github.io/luna-eclipse-labyrinth/`
 
 Netlifyを使う場合も、この新しいGitHubリポジトリを別サイトとして登録します。公開フォルダはプロジェクトルート、ビルドコマンドは不要です。
 
