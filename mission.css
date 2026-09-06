@@ -1,0 +1,67 @@
+/* 月蝕タイムアタック・ミッション画面。拠点と同じ黒紺・青い月光・控えめな金装飾。 */
+:root{color-scheme:dark;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;color:#f5f1e8;background:#02040a;--gold:#d7b76b;--line:rgba(215,183,107,.43);--blue:#81beff}
+*{box-sizing:border-box}
+button{font:inherit}
+body{min-width:320px;min-height:100dvh;margin:0;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 25%,#17284c,#02040a 62%)}
+
+.mission-screen{position:relative;width:min(100vw,430px);height:min(100dvh,932px);min-height:620px;overflow:hidden;isolation:isolate;background:#061020;box-shadow:0 0 50px #000;display:flex;flex-direction:column}
+
+.mission-header{display:flex;align-items:center;gap:10px;padding:max(12px,env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:linear-gradient(#01050ff2,#040a1899);backdrop-filter:blur(8px)}
+.mission-crest{display:grid;width:38px;aspect-ratio:1;place-items:center;border:1px solid var(--gold);color:#c8e2ff;background:#051226e8;box-shadow:inset 0 0 15px #0c3768,0 0 12px #4997ff55;font-size:19px;transform:rotate(45deg)}
+.mission-crest span{transform:rotate(-45deg)}
+.mission-header small{display:block;color:#8fbcf0;font:600 8px/1.3 system-ui;letter-spacing:.2em}
+.mission-header h1{margin:2px 0 0;font-size:18px;font-weight:500;letter-spacing:.1em}
+.mission-back{margin-left:auto;border:1px solid var(--line);padding:6px 10px;color:#d8e8ff;background:#050c18;font-size:11px;letter-spacing:.08em;text-decoration:none}
+
+.mission-body{position:relative;flex:1;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 18px max(16px,env(safe-area-inset-left,0px))}
+
+.mission-panel{display:none}
+.mission-panel.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+.mission-lead{margin:0 0 16px;color:#c4a862;font:600 9px/1.3 system-ui;letter-spacing:.2em}
+.mission-title{margin:0 0 14px;font-size:24px;font-weight:500;letter-spacing:.08em;text-shadow:0 3px 15px #000}
+
+.mission-card{border:1px solid var(--line);padding:14px 16px;color:#e9edf4;background:linear-gradient(110deg,#030a18ed,#091224b0);box-shadow:0 8px 24px #0005;backdrop-filter:blur(6px);margin-bottom:14px}
+.mission-card b{display:block;margin-bottom:6px;color:var(--gold);font:700 9px/1 system-ui;letter-spacing:.16em}
+.mission-card p{margin:0;font-size:13px;line-height:1.7;color:#c9d2df}
+
+.relic-icon{display:grid;width:64px;height:64px;margin:0 auto 18px;place-items:center;border:1px solid var(--gold);color:#eecf8a;background:radial-gradient(circle,#14213f,#050b18);box-shadow:0 0 20px rgba(56,189,248,.25);font-size:30px}
+.relic-icon.locked{filter:grayscale(1) brightness(.6);border-color:#4b5568;color:#7a8598}
+
+.rate-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+.rate-row b{font-size:26px;color:var(--gold);letter-spacing:.02em}
+.rate-row span{font-size:11px;color:#8fbcf0}
+
+.level-stepper{display:flex;align-items:center;gap:10px;margin-top:10px}
+.level-stepper button{width:30px;height:30px;border:1px solid var(--line);color:#e9edf4;background:#050c18;font-size:15px}
+.level-stepper output{min-width:64px;text-align:center;font-size:12px;color:#c9d2df}
+
+.timer{display:flex;align-items:baseline;gap:6px;margin-bottom:14px}
+.timer b{font-size:34px;color:#f1cf74;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.timer span{font-size:10px;color:#8fbcf0;letter-spacing:.12em}
+
+.floor-now{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.floor-now b{font-size:22px;color:#f5dfa2}
+.floor-now small{color:#8fbcf0;font-size:9px;letter-spacing:.1em}
+
+.reward-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.reward-list li{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);padding:8px 10px;font-size:12px;color:#c9d2df;background:#050c18b3}
+.reward-list li.got{border-color:rgba(56,189,248,.5);color:#e9edf4}
+.reward-list li .tag{color:#8fbcf0;font-size:9px;letter-spacing:.1em}
+.reward-list li.next{opacity:.55}
+
+.rank-badge{display:inline-flex;align-items:center;gap:6px;border:1px solid #50b8ff80;padding:6px 12px;color:#8fc9ff;font:700 11px/1 system-ui;letter-spacing:.1em;margin-bottom:14px}
+
+.mission-actions{display:flex;gap:8px;margin-top:16px}
+.mission-actions button{flex:1;border:1px solid var(--line);padding:11px;color:#f4f4f1;background:linear-gradient(145deg,#0e192bf2,#03070ff5);box-shadow:inset 0 0 14px #2c65a91f,0 4px 12px #0008;font-size:12px;letter-spacing:.1em}
+.mission-actions button.primary{border-color:#72b7ffb3;background:linear-gradient(90deg,#040d1df5,#0c2d51eb,#040d1df5);color:#f1dfae}
+.mission-actions button:active{transform:scale(.98)}
+
+/* プレビュー専用の開発バー。本番UIには含めない。 */
+.preview-devbar{position:relative;z-index:5;display:flex;flex-wrap:wrap;gap:6px;padding:10px max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px));border-top:1px solid var(--line);background:#01040cf2}
+.preview-devbar b{width:100%;color:#6d7e94;font:700 8px/1.4 system-ui;letter-spacing:.18em}
+.preview-devbar button{border:1px solid var(--line);padding:6px 9px;color:#c6cfdb;background:#050c18;font-size:10px;letter-spacing:.05em}
+.preview-devbar button.on{border-color:var(--gold);color:#f1cf74}
+
+@media(max-height:700px){.mission-title{font-size:20px}.relic-icon{width:52px;height:52px;font-size:24px;margin-bottom:12px}}
