@@ -57,8 +57,9 @@ $ node --test tests/mission-system.test.mjs
 3. **ダンジョン内で階層が変わるたび**
    `recordFloorReached(state, currentFloor)` を呼び、`activeRun.floorReached` を更新する（`status!=='active'` のときは何もしないので安全に毎回呼んでよい）。
 
-4. **制限時間経過、または帰還でタイムアタックを終える時**
-   `isTimeExpired(state.activeRun, Date.now())` で時間切れ判定し、時間切れまたは帰還操作のどちらでも `finalizeMissionRun(state, MISSION_CONFIG)` を呼んで結果を確定する（到達階以下の途中報酬・最高アイテムランクはこの中で算出済み）。実際の報酬付与（アイテム・ランク品の獲得処理）はセーブデータ側で `lastResult.rewards` / `lastResult.rank` を読んで反映すること。
+4. **制限時間経過・帰還・死亡（全滅）のいずれかでタイムアタックを終える時**
+   終了理由は3通りある。**（a）`isTimeExpired(state.activeRun, Date.now())` が `true` になった時**、**（b）プレイヤーが自発的に帰還した時**、**（c）その潜行中に全滅（ゲームオーバー）した時**。`finalizeMissionRun(state, MISSION_CONFIG)` はどの理由で呼んでもまったく同じに動く（呼び出し時点の `activeRun.floorReached` だけを見て報酬とランクを確定する、終了理由を引数に取らない設計）。**そのため死亡時にも必ず同じ関数を呼ぶこと** — 死亡だからといって報酬を取り消したり `finalizeMissionRun` を呼ばずに `idle`/初期状態へ戻したりしない。「到達済みの途中階報酬もすべて獲得」という確定仕様は、成功終了時と同じく死亡終了時にも適用される。実際の報酬付与（アイテム・ランク品の獲得処理）はセーブデータ側で `lastResult.rewards` / `lastResult.rank` を読んで反映すること。
+   （※他ゲームの類似ギミック——一定階数から先は帰還でも死亡でもクエスト達成扱いになり毎回アイテムを獲得する型——を踏まえた設計。トリガーの種類を問わず「その時点の到達階で報酬確定」という単一ルールに統一しておくと、終了理由ごとに分岐を書かずに済む。）
 
 5. **結果画面を閉じた時**
    `acknowledgeResult(state)` で `idle` へ戻し、次回の抽選ができるようにする。
