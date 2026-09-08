@@ -63,4 +63,4 @@
 
 .widgets { top: calc(env(safe-area-inset-top, 0px) + 76px); }
 @media (max-height: 760px) { .widgets { top: calc(env(safe-area-inset-top, 0px) + 70px); } }
-.top-actions{display:flex;align-items:center;gap:3px;margin-left:auto}.top-actions button{width:30px;height:30px;border:0;color:#d8e8ff;background:transparent;font-size:18px}.top-actions #bgm-toggle.playing{color:#83c9ff;text-shadow:0 0 8px #38bdf8}
+.top-actions{display:flex;align-items:center;gap:3px;margin-left:auto}.top-actions button,.top-actions a{display:grid;width:30px;height:30px;place-items:center;border:0;color:#d8e8ff;text-decoration:none;background:transparent;font-size:18px}.top-actions #bgm-toggle.playing{color:#83c9ff;text-shadow:0 0 8px #38bdf8}
