@@ -69,7 +69,7 @@ namespace LunaEclipse.EditorTools
                 EditorSceneManager.SaveScene(dungeon,DungeonScenePath);
                 EditorSceneManager.CloseScene(dungeon,true);
             }
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(DungeonScenePath,true),new EditorBuildSettingsScene(StartupScenePath,true) };
+            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(StartupScenePath,true),new EditorBuildSettingsScene(DungeonScenePath,true) };
 
             foreach (string path in AssetDatabase.GetAllAssetPaths().Where(IsHubPng))
             {
