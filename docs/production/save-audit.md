@@ -1,0 +1,35 @@
+# 保存・持込経路の読み取り監査
+
+監査開始時は実PlayerPrefs、Unity、既存コードを変更せず読み取りで実施。その後、追加承認を受けてInventoryVault.csを修正し、VaultCorruptionTests.csを追加した。実PlayerPrefsへの操作は行っていない。
+
+## 通常経路
+
+- 出発はBeginExpedition成功後のみ。LoadoutからInExpeditionへ同一保存で移る。
+- 現在バッグはコピーでゲームへ入り、同ID・強化値を維持する。
+- 帰還は遺物記録→倉庫登録の順。後者だけ失敗してもSaveFailureモーダルが探索入力を止め、同じrunIdで再試行する。遺物は同ID再報告を再登録しない。
+- 倉庫成功時のみescrowを消す。再挑戦は旧探索を保存した後、空バッグの新しい探索を開始する。旧装備は倉庫にあり消失ではない。
+- 再挑戦の新探索はBeginExpeditionを通さないが持込品ゼロのため未確定持込品の消失は起きない。統一性の観点では出発経路に寄せる余地がある。
+- 結果画面はLastRunId一致時だけ今回の品と表示するため、片側だけ保存成功しても前回品を今回品と誤表示しない。
+
+## 修正済み：矛盾したJSONのescrow
+
+修正前のInventoryVault.ParseはJSON構文・リスト要素を検査していたが、ActiveRunIdとInExpeditionの整合性を検査していなかった。
+
+再現条件：Version1、正常Warehouse/Pending/Loadout、InExpeditionに剣1個、ActiveRunId=nullという構文上正しい破損データ。
+
+1. Parseが受理。
+2. RecoverInterruptedはActiveRunIdが空なので成功扱いで何もしない。
+3. BeginExpeditionがInExpeditionを空Loadoutで置き換える。
+4. 剣が現行プロフィールから消える（直前backupに残る可能性はある）。
+
+InventoryVault.Parseへ「InExpedition非空ならActiveRunId必須」「ActiveRunIdが完了リストに存在してはならない」を実装した。完了runIdの空値・重複、所持リスト間の同IDも拒否しバックアップへフォールバックする。LastReturnedは履歴コピーなので所有IDの重複検査から除外する。
+
+旧Version1にLoadout/InExpeditionフィールドが存在しない場合は空へ正常移行する。null Kindはunknown、null NameはIDへ補完し、将来の未知Kindを削除しない。破損元は読み込みだけでは書き換えず、復元後の保存時に.corruptへ原文を保持する。
+
+追加テスト入口 `LunaEclipse.EditorTools.VaultCorruptionTests.Run`：孤立escrow、完了済みactive ID、所有ID重複、正常backup復元、破損原文退避、旧Version1移行、null Kind、履歴コピーの正常受理。実セーブとUnityには触れていない。
+
+## 既知の限界
+
+バックアップは直前保存であり、主保存の破損時には最後の操作が戻る。探索中断復元は元持込品だけで、未確定拾得物や探索状態は対象外。二重サービスをディスク上で一括コミットしているわけではないため、両保存の間でプロセスが終了した場合は「遺物記録は確定／倉庫は元持込復元」という状態になり得る。現方針の保全対象と整合するが、将来完全な中断再開を提供するなら探索スナップショット付きコミット記録が必要。
+
+独立テストコード：ProgressionIntegrationTests.Run、VaultLoadoutTests.Run。監査担当自身はUnityを起動していない。その後、親担当がbuild7でVaultCorruptionTestsを含む7組のテストを実行し成功した。実行版の2周プレイ検証も108チェック成功と報告された。

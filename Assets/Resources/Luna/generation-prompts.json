@@ -1,0 +1,22 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "source/official.png",
+  "generated": [
+    {
+      "direction": "left",
+      "source": "source/attack-left-generated.png",
+      "prompt": "Use case: stylized-concept. Asset type: game animation strip. Reference image is Luna's official character sheet; match the SMALL WALKING LEFT sprite's chibi proportions, roughly 2.5 heads tall, large head, short body, silver hair, blue rose and navy black white gothic costume. Create a horizontal strip of THREE full-body successive short sword attack poses all facing LEFT in strict side profile: wind-up, extended leftward strike with blue slash, recovery. Same head size and torso size and feet baseline in all three. Deliberately short legs like reference small walking sprites. Keep wide empty separation between poses including swords and hair. Each figure fits comfortably in its third without touching edges. Sharp small pixel art, no smooth painted details. Backdrop: SOLID PURE GREEN #00ff00, uniform flat colour, for deterministic colour-key extraction. No transparency grid, no checkerboard, no shadows, no texture, no letters, no labels, no lines. Preserve character identity. Show the side of the hair appropriate to facing left as in walking-left reference, not a simple mirror of left. One strip only."
+    },
+    {
+      "direction": "right",
+      "source": "source/attack-right-generated.png",
+      "prompt": "Use case: stylized-concept. Asset type: game animation strip. Reference image is Luna's official character sheet; match the SMALL WALKING RIGHT sprite's chibi proportions, roughly 2.5 heads tall, large head, short body, silver hair, blue rose and navy black white gothic costume. Create a horizontal strip of THREE full-body successive short sword attack poses all facing RIGHT in strict side profile: wind-up, extended rightward strike with blue slash, recovery. Same head size and torso size and feet baseline in all three. Deliberately short legs like reference small walking sprites. Keep wide empty separation between poses including swords and hair. Each figure fits comfortably in its third without touching edges. Sharp small pixel art, no smooth painted details. Backdrop: SOLID PURE GREEN #00ff00, uniform flat colour, for deterministic colour-key extraction. No transparency grid, no checkerboard, no shadows, no texture, no letters, no labels, no lines. Preserve character identity. Show the side of the hair appropriate to facing right as in walking-right reference, not a simple mirror of left. One strip only."
+    },
+    {
+      "direction": "up",
+      "source": "source/attack-up-generated.png",
+      "prompt": "Use case: stylized-concept. Asset type: game animation strip. Reference image is Luna's official character sheet; match the SMALL WALKING UP sprite's chibi proportions, roughly 2.5 heads tall, large head, short body, silver long hair covering back, navy black white gothic costume. Create one horizontal strip of THREE full-body successive short sword attack poses all facing UP AWAY FROM THE VIEWER, exact rear view: wind-up sword raised beside head, upward strike sword forward beyond head with compact blue crescent, recovery sword beside body. NO FACE OR EYES VISIBLE in any frame. Hair conceals back like walking-up reference. Same head size, torso size and feet baseline in all three. Deliberately short legs like reference small walking sprites. Keep wide empty separation between poses including swords and hair. Each figure fits comfortably in its third without touching edges. Sharp small pixel art, no smooth painted details. Backdrop: SOLID PURE GREEN #00ff00 uniform flat colour for deterministic colour-key extraction. No transparency grid, no checkerboard, no shadows, no texture, no letters, no labels, no lines. Preserve identity, full body, full swords, small game sprites. One strip only."
+    }
+  ],
+  "discarded": "Initial left strip rejected because it contained a painted checkerboard background; not used."
+}

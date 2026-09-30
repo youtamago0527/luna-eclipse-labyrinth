@@ -1,0 +1,4 @@
+Unity Editor Game View: 1170x2532
+Tile width: 130.00px
+Luna idle body target: 0.85 tiles
+Viewport design: 1170x1890

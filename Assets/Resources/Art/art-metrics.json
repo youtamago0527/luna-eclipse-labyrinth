@@ -1,0 +1,112 @@
+{
+  "Entries": [
+    {
+      "Resource": "Art/Monsters/little_ghost",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 332,
+      "MinY": 212,
+      "MaxX": 995,
+      "MaxY": 1056
+    },
+    {
+      "Resource": "Art/Monsters/mimic",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 266,
+      "MinY": 239,
+      "MaxX": 1018,
+      "MaxY": 1036
+    },
+    {
+      "Resource": "Art/Monsters/moon_bat",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 16,
+      "MinY": 242,
+      "MaxX": 1237,
+      "MaxY": 954
+    },
+    {
+      "Resource": "Art/Monsters/moon_slime",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 289,
+      "MinY": 375,
+      "MaxX": 995,
+      "MaxY": 931
+    },
+    {
+      "Resource": "Art/Monsters/mushroom",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 148,
+      "MinY": 171,
+      "MaxX": 1113,
+      "MaxY": 1098
+    },
+    {
+      "Resource": "Art/Monsters/stone_golem",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 128,
+      "MinY": 163,
+      "MaxX": 1138,
+      "MaxY": 1122
+    },
+    {
+      "Resource": "Art/Items/depth_compass",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 250,
+      "MinY": 142,
+      "MaxX": 1025,
+      "MaxY": 1063
+    },
+    {
+      "Resource": "Art/Items/herb",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 178,
+      "MinY": 153,
+      "MaxX": 1110,
+      "MaxY": 1081
+    },
+    {
+      "Resource": "Art/Items/moon_shield",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 325,
+      "MinY": 208,
+      "MaxX": 929,
+      "MaxY": 1028
+    },
+    {
+      "Resource": "Art/Items/moon_sword",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 130,
+      "MinY": 82,
+      "MaxX": 1172,
+      "MaxY": 1172
+    },
+    {
+      "Resource": "Art/Items/potion",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 246,
+      "MinY": 146,
+      "MaxX": 1006,
+      "MaxY": 1091
+    },
+    {
+      "Resource": "Art/Items/return_scroll",
+      "Width": 1254,
+      "Height": 1254,
+      "MinX": 74,
+      "MinY": 357,
+      "MaxX": 1200,
+      "MaxY": 918
+    }
+  ]
+}

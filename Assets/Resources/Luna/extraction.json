@@ -1,0 +1,415 @@
+{
+  "source": "source/official.png",
+  "canvas": [
+    320,
+    240
+  ],
+  "anchor": [
+    160,
+    216
+  ],
+  "frames": [
+    {
+      "file": "walk/down_01.png",
+      "sourceBounds": [
+        347,
+        59,
+        430,
+        191
+      ],
+      "sourceCenterX": 385,
+      "sourceFootY": 186,
+      "scale": 1
+    },
+    {
+      "file": "walk/down_02.png",
+      "sourceBounds": [
+        448,
+        59,
+        534,
+        192
+      ],
+      "sourceCenterX": 487,
+      "sourceFootY": 186,
+      "scale": 1
+    },
+    {
+      "file": "walk/down_03.png",
+      "sourceBounds": [
+        550,
+        59,
+        636,
+        192
+      ],
+      "sourceCenterX": 588,
+      "sourceFootY": 186,
+      "scale": 1
+    },
+    {
+      "file": "walk/down_04.png",
+      "sourceBounds": [
+        657,
+        59,
+        741,
+        192
+      ],
+      "sourceCenterX": 698,
+      "sourceFootY": 186,
+      "scale": 1
+    },
+    {
+      "file": "idle/down.png",
+      "sourceBounds": [
+        347,
+        59,
+        430,
+        191
+      ],
+      "sourceCenterX": 385,
+      "sourceFootY": 186,
+      "scale": 1
+    },
+    {
+      "file": "walk/left_01.png",
+      "sourceBounds": [
+        351,
+        193,
+        430,
+        319
+      ],
+      "sourceCenterX": 390,
+      "sourceFootY": 314,
+      "scale": 1
+    },
+    {
+      "file": "walk/left_02.png",
+      "sourceBounds": [
+        451,
+        193,
+        531,
+        319
+      ],
+      "sourceCenterX": 490,
+      "sourceFootY": 314,
+      "scale": 1
+    },
+    {
+      "file": "walk/left_03.png",
+      "sourceBounds": [
+        551,
+        193,
+        631,
+        319
+      ],
+      "sourceCenterX": 590,
+      "sourceFootY": 314,
+      "scale": 1
+    },
+    {
+      "file": "walk/left_04.png",
+      "sourceBounds": [
+        658,
+        193,
+        736,
+        319
+      ],
+      "sourceCenterX": 699,
+      "sourceFootY": 314,
+      "scale": 1
+    },
+    {
+      "file": "idle/left.png",
+      "sourceBounds": [
+        351,
+        193,
+        430,
+        319
+      ],
+      "sourceCenterX": 390,
+      "sourceFootY": 314,
+      "scale": 1
+    },
+    {
+      "file": "walk/right_01.png",
+      "sourceBounds": [
+        351,
+        321,
+        429,
+        449
+      ],
+      "sourceCenterX": 390,
+      "sourceFootY": 443,
+      "scale": 1
+    },
+    {
+      "file": "walk/right_02.png",
+      "sourceBounds": [
+        451,
+        321,
+        530,
+        449
+      ],
+      "sourceCenterX": 490,
+      "sourceFootY": 443,
+      "scale": 1
+    },
+    {
+      "file": "walk/right_03.png",
+      "sourceBounds": [
+        551,
+        321,
+        630,
+        449
+      ],
+      "sourceCenterX": 590,
+      "sourceFootY": 443,
+      "scale": 1
+    },
+    {
+      "file": "walk/right_04.png",
+      "sourceBounds": [
+        657,
+        321,
+        737,
+        449
+      ],
+      "sourceCenterX": 698,
+      "sourceFootY": 443,
+      "scale": 1
+    },
+    {
+      "file": "idle/right.png",
+      "sourceBounds": [
+        351,
+        321,
+        429,
+        449
+      ],
+      "sourceCenterX": 390,
+      "sourceFootY": 443,
+      "scale": 1
+    },
+    {
+      "file": "walk/up_01.png",
+      "sourceBounds": [
+        350,
+        455,
+        433,
+        586
+      ],
+      "sourceCenterX": 393,
+      "sourceFootY": 580,
+      "scale": 1
+    },
+    {
+      "file": "walk/up_02.png",
+      "sourceBounds": [
+        449,
+        455,
+        535,
+        586
+      ],
+      "sourceCenterX": 492,
+      "sourceFootY": 580,
+      "scale": 1
+    },
+    {
+      "file": "walk/up_03.png",
+      "sourceBounds": [
+        550,
+        455,
+        636,
+        586
+      ],
+      "sourceCenterX": 591,
+      "sourceFootY": 580,
+      "scale": 1
+    },
+    {
+      "file": "walk/up_04.png",
+      "sourceBounds": [
+        657,
+        455,
+        741,
+        586
+      ],
+      "sourceCenterX": 699,
+      "sourceFootY": 580,
+      "scale": 1
+    },
+    {
+      "file": "idle/up.png",
+      "sourceBounds": [
+        350,
+        455,
+        433,
+        586
+      ],
+      "sourceCenterX": 393,
+      "sourceFootY": 580,
+      "scale": 1
+    },
+    {
+      "file": "attack/down_01.png",
+      "sourceBounds": [
+        790,
+        283,
+        919,
+        425
+      ],
+      "sourceCenterX": 842,
+      "sourceFootY": 419,
+      "scale": 0.94
+    },
+    {
+      "file": "attack/down_02.png",
+      "sourceBounds": [
+        923,
+        287,
+        1070,
+        426
+      ],
+      "sourceCenterX": 970,
+      "sourceFootY": 419,
+      "scale": 0.94
+    },
+    {
+      "file": "attack/down_03.png",
+      "sourceBounds": [
+        1080,
+        289,
+        1220,
+        425
+      ],
+      "sourceCenterX": 1129,
+      "sourceFootY": 419,
+      "scale": 0.94
+    },
+    {
+      "file": "attack/left_01.png",
+      "source": "source/attack-left-generated.png",
+      "sourceBounds": [
+        130,
+        140,
+        510,
+        598
+      ],
+      "sourceCenterX": 281,
+      "sourceFootY": 584,
+      "scale": 0.3,
+      "generated": true
+    },
+    {
+      "file": "attack/left_02.png",
+      "source": "source/attack-left-generated.png",
+      "sourceBounds": [
+        708,
+        150,
+        1365,
+        598
+      ],
+      "sourceCenterX": 1135,
+      "sourceFootY": 584,
+      "scale": 0.3,
+      "generated": true
+    },
+    {
+      "file": "attack/left_03.png",
+      "source": "source/attack-left-generated.png",
+      "sourceBounds": [
+        1655,
+        150,
+        2027,
+        598
+      ],
+      "sourceCenterX": 1861,
+      "sourceFootY": 584,
+      "scale": 0.3,
+      "generated": true
+    },
+    {
+      "file": "attack/right_01.png",
+      "source": "source/attack-right-generated.png",
+      "sourceBounds": [
+        20,
+        140,
+        475,
+        617
+      ],
+      "sourceCenterX": 340,
+      "sourceFootY": 602,
+      "scale": 0.282,
+      "generated": true
+    },
+    {
+      "file": "attack/right_02.png",
+      "source": "source/attack-right-generated.png",
+      "sourceBounds": [
+        716,
+        140,
+        1510,
+        617
+      ],
+      "sourceCenterX": 983,
+      "sourceFootY": 602,
+      "scale": 0.282,
+      "generated": true
+    },
+    {
+      "file": "attack/right_03.png",
+      "source": "source/attack-right-generated.png",
+      "sourceBounds": [
+        1615,
+        140,
+        2095,
+        617
+      ],
+      "sourceCenterX": 1844,
+      "sourceFootY": 602,
+      "scale": 0.282,
+      "generated": true
+    },
+    {
+      "file": "attack/up_01.png",
+      "source": "source/attack-up-generated.png",
+      "sourceBounds": [
+        300,
+        174,
+        597,
+        609
+      ],
+      "sourceCenterX": 424,
+      "sourceFootY": 594,
+      "scale": 0.335,
+      "generated": true
+    },
+    {
+      "file": "attack/up_02.png",
+      "source": "source/attack-up-generated.png",
+      "sourceBounds": [
+        908,
+        32,
+        1354,
+        609
+      ],
+      "sourceCenterX": 1060,
+      "sourceFootY": 594,
+      "scale": 0.335,
+      "generated": true
+    },
+    {
+      "file": "attack/up_03.png",
+      "source": "source/attack-up-generated.png",
+      "sourceBounds": [
+        1600,
+        197,
+        1958,
+        609
+      ],
+      "sourceCenterX": 1732,
+      "sourceFootY": 594,
+      "scale": 0.335,
+      "generated": true
+    }
+  ]
+}
