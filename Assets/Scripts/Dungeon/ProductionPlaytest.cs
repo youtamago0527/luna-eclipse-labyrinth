@@ -210,6 +210,27 @@ namespace LunaEclipse.Dungeon
             var game=FindFirstObjectByType<GameManager>();Check(game!=null,"runtime manager");
             yield return new WaitForSecondsRealtime(1.1f);Audio("luna-moonlit-footsteps");yield return Capture("04-dungeon");
             game.Run.AmbientEncounters=false;game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"--luna-depth-capture")>=0)
+            {
+                // Disposable visual fixtures. Never persisted or exposed in normal game routes.
+                var original=game.Run;
+                foreach(int depth in new[]{1,5,10,15,20})
+                {
+                    var sample=new DungeonRun(104,startFloor:depth){AmbientEncounters=false};
+                    var room=sample.Map.Rooms.OrderByDescending(r=>r.width*r.height).First();
+                    var centerCell=new Vector2Int(room.x+room.width/2,room.y+room.height/2);
+                    typeof(DungeonRun).GetProperty("PlayerCell").SetValue(sample,centerCell);sample.Map.Reveal(centerCell);
+                    sample.Enemies.Clear();sample.Enemies.Add(new EnemyData{Id=1,Cell=centerCell+Vector2Int.right,Archetype="moon_slime"});
+                    sample.Enemies.Add(new EnemyData{Id=2,Cell=centerCell+Vector2Int.up,Archetype="moon_bat"});
+                    typeof(GameManager).GetProperty("Run").SetValue(game,sample);game.Renderer.Refresh(sample);game.UI.Refresh(sample,false);
+                    var actor=GameObject.Find("Luna").GetComponent<SpriteRenderer>();
+                    Check(Mathf.Abs(actor.bounds.size.y*DungeonPresentation.LunaBodyCanvasRatio-1.02f)<.01f,"larger Luna visual height");
+                    yield return Capture("depth-"+depth.ToString("00")+"-room");
+                    for(int x=0;x<sample.Map.Width;x++)for(int y=0;y<sample.Map.Height;y++)sample.Map.Explored[x,y]=true;
+                    game.UI.Refresh(sample,false);Click("Minimap");yield return Capture("depth-"+depth.ToString("00")+"-map");Click("閉じる");
+                }
+                typeof(GameManager).GetProperty("Run").SetValue(game,original);game.Renderer.Refresh(original);game.UI.Refresh(original,false);
+            }
             var center=game.Run.Map.FloorCells().First(c=>DungeonRules.MovementDirections.All(d=>DungeonRules.CanStep(game.Run.Map,c,c+d)));
             foreach(var cell in PathTo(game.Run,center)){game.Move(cell-game.Run.PlayerCell);yield return Ready(game);}
             foreach(var d in DungeonRules.MovementDirections.Where(d=>d.x!=0&&d.y!=0))

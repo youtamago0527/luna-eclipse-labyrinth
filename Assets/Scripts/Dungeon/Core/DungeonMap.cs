@@ -7,6 +7,7 @@ namespace LunaEclipse.Dungeon
     {
         public int Width { get; }
         public int Height { get; }
+        public DungeonFloorProfile Profile {get;internal set;} = DungeonFloorProfile.ForFloor(1);
         public Vector2Int Start { get; internal set; }
         public Vector2Int Stairs { get; internal set; }
         public List<RectInt> Rooms { get; } = new List<RectInt>();

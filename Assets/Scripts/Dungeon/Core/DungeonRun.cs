@@ -56,7 +56,7 @@ namespace LunaEclipse.Dungeon
                 Bag.Add(new ItemData{Id=item.Id,Kind=item.Kind,Name=item.Name,Enhancement=item.Enhancement,Identified=item.Identified});
             }
             EnterFloor();
-            Log("月影の迷宮へ。近くの薬草を拾ってみよう。");
+            Log(Map.Profile.Name+"へ。近くの薬草を拾ってみよう。");
         }
         public bool Move(Vector2Int direction)
         {
@@ -171,7 +171,7 @@ namespace LunaEclipse.Dungeon
             if (!CanDescend) return false;
             SpendTurn(); Recover(); Floor++; EnterFloor();
             LastAction = "stairs"; LastAttackCell = null;
-            Log("B" + Floor + "Fへ降りた。探索を続けよう。");
+            Log("B" + Floor + "F・"+Map.Profile.Name+"へ降りた。");
             return true;
         }
         public void Log(string text)

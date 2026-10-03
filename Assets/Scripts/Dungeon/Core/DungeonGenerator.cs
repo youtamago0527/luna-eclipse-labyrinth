@@ -10,17 +10,20 @@ namespace LunaEclipse.Dungeon
         {
             var random = new System.Random(unchecked(seed * 397 ^ floor * 7919));
             var map = new DungeonMap(DungeonRules.Width, DungeonRules.Height);
+            var profile=DungeonFloorProfile.ForFloor(floor);map.Profile=profile;
+            var links=new HashSet<int>();
             var sectors = new List<int>();
             for (int i = 0; i < 9; i++) sectors.Add(i);
             Shuffle(sectors, random);
             // Start in the middle sector: the camera can centre Luna without hitting map bounds.
             int middle = sectors.IndexOf(4); int first = sectors[0]; sectors[0] = 4; sectors[middle] = first;
-            int count = random.Next(5, 8);
+            int count = random.Next(profile.MinRooms,profile.MaxRooms+1);
             for (int i = 0; i < count; i++)
             {
                 int col = sectors[i] % 3, row = sectors[i] / 3;
-                // Rooms fit inside the nine-tile-wide view, with visible perimeter walls.
-                int width = random.Next(5, 8), height = random.Next(5, 9);
+                // Keep a compact landing room; deeper halls may extend beyond the camera view.
+                int width = random.Next(i==0?5:profile.MinWidth,(i==0?7:profile.MaxWidth)+1);
+                int height = random.Next(i==0?5:profile.MinHeight,(i==0?8:profile.MaxHeight)+1);
                 int x = col * 13 + random.Next(1, 13 - width);
                 int y = row * 15 + random.Next(1, 15 - height);
                 var room = new RectInt(x, y, width, height);
@@ -32,16 +35,25 @@ namespace LunaEclipse.Dungeon
                     var source = Center(room);
                     var target = Center(map.Rooms[0]);
                     int nearest = int.MaxValue;
+                    int parent=0;
                     for (int j = 0; j < i; j++)
                     {
                         var candidate = Center(map.Rooms[j]);
                         int distance = DungeonRules.Distance(source, candidate);
-                        if (distance < nearest) { nearest = distance; target = candidate; }
+                        if (distance < nearest) { nearest = distance; target = candidate; parent=j; }
                     }
                     Connect(map, source, target, random.Next(2) == 0);
+                    links.Add(parent*9+i);
                 }
             }
-            AddDeadEnds(map, random);
+            // Extra room connections create alternate routes instead of only a tree of dead ends.
+            var pairs=new List<int>();
+            for(int a=0;a<count;a++)for(int b=a+1;b<count;b++)if(!links.Contains(a*9+b))pairs.Add(a*9+b);
+            // Do not consume RNG for the original shallow-floor layout.
+            if(profile.ExtraLinks>0)Shuffle(pairs,random);
+            for(int i=0;i<Math.Min(profile.ExtraLinks,pairs.Count);i++)
+                Connect(map,Center(map.Rooms[pairs[i]/9]),Center(map.Rooms[pairs[i]%9]),random.Next(2)==0);
+            AddDeadEnds(map, random,profile.DeadEnds);
             map.Start = Center(map.Rooms[0]);
             var distances = Distances(map, map.Start);
             int farthest = -1;
@@ -77,7 +89,7 @@ namespace LunaEclipse.Dungeon
         }
         private static Vector2Int Center(RectInt room)
             => new Vector2Int(room.x + room.width / 2, room.y + room.height / 2);
-        private static void AddDeadEnds(DungeonMap map, System.Random random)
+        private static void AddDeadEnds(DungeonMap map, System.Random random,int target)
         {
             var origins = map.FloorCells().FindAll(cell => map.RoomIndex(cell) < 0);
             Shuffle(origins, random); int made = 0;
@@ -101,7 +113,7 @@ namespace LunaEclipse.Dungeon
                     foreach (var cell in branch) map.Carve(cell);
                     made++; break;
                 }
-                if (made >= 3) return;
+                if (made >= target) return;
             }
         }
         private static void Connect(DungeonMap map, Vector2Int from, Vector2Int to, bool horizontalFirst)

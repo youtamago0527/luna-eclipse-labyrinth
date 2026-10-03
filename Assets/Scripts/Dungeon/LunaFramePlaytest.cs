@@ -55,7 +55,7 @@ namespace LunaEclipse.Dungeon
             app.Navigate("dungeon");yield return null;yield return null;
             var game=FindFirstObjectByType<GameManager>();Check(game!=null,"existing production game manager");
             while(game.Busy)yield return null;
-            game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);game.SetModal(true);
+            game.Run.AmbientEncounters=false;game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);game.SetModal(true);
             var playerObject=GameObject.Find("Luna");Check(playerObject!=null,"production player object");
             var player=playerObject.GetComponent<SpriteRenderer>();var cameraObject=GameObject.Find("Dungeon Camera");
             Check(player!=null&&cameraObject!=null,"production renderer and camera");var camera=cameraObject.GetComponent<Camera>();

@@ -189,12 +189,13 @@ namespace LunaEclipse.Dungeon
                 if(run.Map.Explored[x,y] && revealedTiles.Add(key))
                 {
                     var cell = new Vector2Int(x,y); uint variation=Hash(x,y,19);
-                    Tile tile = cell == run.Map.Stairs ? stair : run.Map.Walkable(cell) ? floors[variation%29==0 ? 5 : (int)(variation%5)] : walls[(int)(variation%3)];
+                    Tile tile = cell == run.Map.Stairs ? stair : run.Map.Walkable(cell) ? floors[variation%run.Map.Profile.CrackEvery==0 ? 5 : (int)(variation%5)] : walls[(int)(variation%3)];
                     tiles.SetTile(key,tile);
                 }
                 float light = run.Map.Visible[x, y] ? 1f : run.Map.Explored[x, y] ? .30f : 1f;
                 if(run.Map.Explored[x,y])light*=run.Map.Walkable(new Vector2Int(x,y))?1.08f:.70f;
-                tiles.SetColor(key, new Color(light, light, light, 1));
+                Color tint=run.Map.Explored[x,y]?run.Map.Profile.Tint:Color.white;
+                tiles.SetColor(key, new Color(light*tint.r, light*tint.g, light*tint.b, 1));
             }
         }
 

@@ -29,7 +29,7 @@ namespace LunaEclipse.Dungeon
    Check(Mathf.Abs(worldCamera.orthographicSize*2*worldCamera.aspect-9)<.01f,"nine large tiles across, no zoom out");
    Check(Mathf.Abs(game.UI.Viewport.rect.height-DungeonPresentation.ViewHeight)<.01f,"viewport reaches controls without gap");
    var luna=GameObject.Find("Luna").GetComponent<SpriteRenderer>();
-   Check(Mathf.Abs(luna.bounds.size.y*DungeonPresentation.LunaBodyCanvasRatio-.85f)<.01f,"visible reference body occupies85percent of tile");
+   Check(Mathf.Abs(luna.bounds.size.y*DungeonPresentation.LunaBodyCanvasRatio-DungeonPresentation.LunaHeight)<.01f,"visible reference body uses configured height");
    Check(Vector2.Distance(worldCamera.transform.position,game.Run.PlayerCell)<.01f,"entry camera centred on Luna");
    Click(game,"持ち物");Check(game.Modal,"bag opens");int modalTurns=game.Run.Turns;game.Wait();Check(game.Run.Turns==modalTurns,"modal blocks commands");Click(game,"閉じる");yield return null;Check(!game.Modal,"bag closes");
    // Isolate render/input stress from combat; separately verify combat below.

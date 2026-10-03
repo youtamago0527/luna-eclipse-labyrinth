@@ -29,7 +29,7 @@ namespace LunaEclipse.EditorTools
             if(++captureFrames<90)return;
             SessionState.SetBool("Luna.PortraitCaptureRequested",false);
             Capture();
-            File.WriteAllText("Screenshots/game-view-metrics.txt",$"Unity Editor Game View: {Screen.width}x{Screen.height}\nTile width: {Screen.width/9f:F2}px\nLuna idle body target: 0.85 tiles\nViewport design: 1170x1890\n");
+            File.WriteAllText("Screenshots/game-view-metrics.txt",$"Unity Editor Game View: {Screen.width}x{Screen.height}\nTile width: {Screen.width/9f:F2}px\nLuna idle body target: {DungeonPresentation.LunaHeight} tiles\nViewport design: 1170x1890\n");
         }
         public static void ValidateAndBuild()
         {
