@@ -120,11 +120,13 @@ namespace LunaEclipse.EditorTools
             Expect(run.WeaponId == alternate.Id && run.Bag.Contains(sword), "replacement retains old sword");
             AcceptedOnce(run, () => run.UseItem(shield.Id), "equip shield");
             Equal(run.DefensePower, 3, "+2 shield gives three defense");
-            AcceptedOnce(run, () => run.DropItem(alternate.Id), "drop equipped sword");
-            Expect(run.WeaponId == null && run.AttackPower == DungeonRules.PlayerAttack, "dropping unequips sword");
-            Expect(run.Items.Count(item => item.Item.Id == alternate.Id && item.Cell == run.PlayerCell) == 1, "same item placed once");
+            RejectedWithoutTurn(run, () => run.DropItem(alternate.Id), "cursed weapon cannot drop");
+            RejectedWithoutTurn(run, () => run.UseItem(sword.Id), "cursed weapon cannot swap");
+            Expect(run.WeaponId==alternate.Id&&alternate.Identified,"curse stays equipped and identifies");
+            AcceptedOnce(run, () => run.DropItem(sword.Id), "drop spare sword");
+            Expect(run.Items.Count(item => item.Item.Id == sword.Id && item.Cell == run.PlayerCell) == 1, "same item placed once");
             AcceptedOnce(run, run.PickUp, "re-pick dropped sword");
-            Expect(run.Bag.Contains(alternate) && run.WeaponId == null, "re-pick preserves identity but does not auto-equip");
+            Expect(run.Bag.Contains(sword) && run.WeaponId == alternate.Id, "re-pick preserves identity and curse");
             AcceptedOnce(run, () => run.DropItem(shield.Id), "drop equipped shield");
             Expect(run.ShieldId == null && run.DefensePower == 0, "dropping unequips shield");
         }

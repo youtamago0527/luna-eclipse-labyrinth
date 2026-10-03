@@ -113,6 +113,12 @@ namespace LunaEclipse.Dungeon
             observation.gameplayControlsBelow44=smallControls.ToArray();boundaryObservations.Add(observation);
         }
         void Route(string route){Check(app.CurrentRoute==route,"route "+route);}
+        void ClickBagItem(GameManager game,string kind)
+        {
+            var item=game.Run.Bag.First(i=>i.Kind==kind);int index=game.Run.Bag.IndexOf(item);
+            for(int page=0;page<index/DungeonRules.ItemsPerPage;page++)Click("次へ");
+            Click((index+1)+". "+item.DisplayName+((game.Run.WeaponId==item.Id||game.Run.ShieldId==item.Id)?" 【装備中】":""));
+        }
         void Click(string label)
         {
             foreach(var button in app.GetComponentsInChildren<Button>())
@@ -204,15 +210,22 @@ namespace LunaEclipse.Dungeon
             var game=FindFirstObjectByType<GameManager>();Check(game!=null,"runtime manager");
             yield return new WaitForSecondsRealtime(1.1f);Audio("luna-moonlit-footsteps");yield return Capture("04-dungeon");
             game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);
+            var held=game.GetComponentsInChildren<HoldMoveButton>().First(h=>game.Run.Map.Walkable(game.Run.PlayerCell+h.Direction*2));
+            var pointer=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){pointerId=7};
+            int heldTurns=game.Run.Turns;held.OnPointerDown(pointer);
+            yield return new WaitForSecondsRealtime(.62f);held.OnPointerUp(pointer);yield return Ready(game);
+            Check(game.Run.Turns>=heldTurns+2,"pointer hold repeats grid steps");
+            heldTurns=game.Run.Turns;yield return new WaitForSecondsRealtime(.4f);
+            Check(game.Run.Turns==heldTurns,"pointer release stops movement");
             // Generated items, actual walking and confirmation UI. Only enemies are isolated.
             foreach(var kind in new[]{"herb","moon_sword"})
             {
+                if(game.Run.Bag.Any(i=>i.Kind==kind))continue;
                 var item=game.Run.Items.Find(i=>i.Item.Kind==kind);Check(item!=null,"generated "+kind);
                 foreach(var cell in PathTo(game.Run,item.Cell)){game.Move(cell-game.Run.PlayerCell);yield return Ready(game);}
-                int turn=game.Run.Turns;Click("拾う");Check(game.Modal,"pickup confirmation");Click("はい");yield return Ready(game);
-                Check(game.Run.Bag.Any(i=>i.Id==item.Item.Id)&&game.Run.Turns==turn+1,"confirmed pickup once");
+                Check(game.Run.Bag.Any(i=>i.Id==item.Item.Id)&&!game.Run.Items.Contains(item),"walking collects item once");
             }
-            Click("持ち物");yield return Capture("05-bag");Click("装備");yield return Ready(game);
+            Click("持ち物");Click("整頓");yield return Capture("05-bag");Click("次へ");yield return Capture("05-page2");Click("前へ");ClickBagItem(game,"moon_sword");yield return Capture("05-item-detail");Click("装備");yield return Ready(game);
             Check(game.Run.WeaponId!=null,"UI sword equip");
             Click("持ち物");yield return Capture("05b-equipped-bag");Click("閉じる");
             // A controlled adjacent attacker creates a reproducible healing opportunity.
@@ -220,7 +233,7 @@ namespace LunaEclipse.Dungeon
             game.Run.Enemies.Add(new EnemyData{Id=999,Cell=game.Run.PlayerCell+adjacent,Hp=50,MaximumHp=50,AttackPower=9});
             game.Wait();yield return Ready(game);game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);
             int hp=game.Run.Hp,satiety=game.Run.Satiety;Check(hp<game.Run.MaxHp,"fixed enemy damages player");
-            Click("持ち物");Click("使う");yield return Ready(game);
+            Click("持ち物");ClickBagItem(game,"herb");Click("使う");yield return Ready(game);
             Check(game.Run.Hp>hp&&game.Run.Satiety<=satiety,"UI healing without satiety recovery");yield return Capture("06-healed");
             var stairPath=PathTo(game.Run,game.Run.Map.Stairs);
             // Stand next to the stairs so the art remains unobscured by Luna.
@@ -238,8 +251,10 @@ namespace LunaEclipse.Dungeon
             // Hub image command has no text label; stable GameObject name is the route.
             Click("relics");yield return null;Route("relics");yield return Capture("09-relics");
             Click("拠点へ戻る");yield return null;Route("hub");Audio("moonlit-sanctuary");yield return Capture("10-hub-returned");
-            var returningSword=new InventoryVault(Store).Profile.Warehouse.Single(i=>i.Kind=="moon_sword");
-            Click("storage");yield return null;Route("storage");Click("持込選択");yield return null;
+            var returningSword=new InventoryVault(Store).Profile.Warehouse.First(i=>i.Kind=="moon_sword");
+            Click("storage");yield return null;Route("storage");
+            int swordIndex=new InventoryVault(Store).Profile.Warehouse.FindIndex(i=>i.Id==returningSword.Id);
+            app.GetComponentsInChildren<Button>().Where(b=>b.interactable&&b.GetComponentsInChildren<Text>().Any(t=>t.text=="持込選択")).ElementAt(swordIndex).onClick.Invoke();yield return null;
             var selected=new InventoryVault(Store).Profile;
             Check(selected.Loadout.Count==1&&selected.Loadout[0].Id==returningSword.Id,"warehouse UI selects the returned sword");
             Check(!selected.Warehouse.Any(i=>i.Id==returningSword.Id),"selection removes warehouse ownership");

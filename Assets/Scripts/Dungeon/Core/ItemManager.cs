@@ -29,7 +29,8 @@ namespace LunaEclipse.Dungeon
         {
             string[] kinds={"herb","moon_sword","moon_shield","potion","herb","potion","moon_sword","herb"};
             string kind=kinds[index%kinds.Length];var definition=ContentCatalog.FindItem(kind);
-            int rolled=new System.Random(unchecked(seed^floor*733^index*227)).Next(-3,4);
+            var random=new System.Random(unchecked(seed^floor*733^index*227));
+            int rolled=random.Next(100)<DungeonRules.NegativeEquipmentPercent?-random.Next(1,4):random.Next(0,4);
             return new FloorItem{Cell=cell,Item=new ItemData{Id=floor+":"+kind+":"+index,Kind=kind,Name=definition.Name,
                 Enhancement=definition.Equipment?rolled+bonus:0}};
         }

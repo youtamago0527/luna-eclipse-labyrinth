@@ -10,6 +10,8 @@ namespace LunaEclipse.Dungeon
         public const int EnemyHp = 5, EnemyAttack = 1, EnemyCount = 3;
         public const int BagCapacity = 20, MaximumSatiety = 100, SatietyTurnInterval = 5;
         public const int AwarenessRadius = 7, LanternRadius = 4;
+        public const int NegativeEquipmentPercent = 5, ItemsPerPage = 10;
+        public const float HoldDelay = .28f, HoldRepeat = .16f;
         public static readonly Vector2Int[] Directions =
         { Vector2Int.up, Vector2Int.right, Vector2Int.down, Vector2Int.left };
         public static int Distance(Vector2Int a, Vector2Int b)
@@ -35,7 +37,10 @@ namespace LunaEclipse.Dungeon
         public string Name = "薬草";
         public string Kind = "herb";
         public int Enhancement;
-        public string DisplayName => Name + ((Kind=="moon_sword"||Kind=="moon_shield")?(Enhancement>=0?" +":" ")+Enhancement:"");
+        public bool Identified;
+        public bool Equipment => Kind=="moon_sword"||Kind=="moon_shield";
+        public bool Cursed => Equipment && Enhancement<0;
+        public string DisplayName => Name + (Equipment ? (!Identified ? " [?]" : (Enhancement>=0?" +":" ")+Enhancement+(Cursed?" 呪":"")) : "");
     }
 
     public sealed class RunModifiers

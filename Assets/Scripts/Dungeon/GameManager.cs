@@ -12,6 +12,13 @@ namespace LunaEclipse.Dungeon
   public DungeonUI UI {get;private set;}
   TurnManager turns; Action returnToHub; Func<DungeonRun,bool> completeRun; RunModifiers modifiers; int startFloor;
   AudioSource sound; AudioClip attackSound,hitSound,pickupSound;
+  Vector2Int heldDirection,keyboardDirection; float nextHeldMove,nextKeyboardMove; bool keyboardFirst;
+  public void BeginMoveHold(Vector2Int direction){if(Modal||Run==null||Run.Dead)return;heldDirection=direction;nextHeldMove=Time.unscaledTime+DungeonRules.HoldDelay;Move(direction);}
+  public void EndMoveHold(Vector2Int direction){if(heldDirection==direction)heldDirection=Vector2Int.zero;}
+  void ClearHeldInput(){heldDirection=keyboardDirection=Vector2Int.zero;}
+  void OnApplicationFocus(bool focused){if(!focused)ClearHeldInput();}
+  void OnApplicationPause(bool paused){if(paused)ClearHeldInput();}
+  void OnDisable(){ClearHeldInput();}
   public void Initialise(RectTransform parent,Action onReturn,int? seed=null,RunModifiers runModifiers=null,int initialFloor=1,Func<DungeonRun,bool> onCompleted=null,string runId=null,System.Collections.Generic.IEnumerable<ItemData> initialItems=null)
   {
    returnToHub=onReturn;completeRun=onCompleted;modifiers=runModifiers??new RunModifiers();startFloor=initialFloor;Run=new DungeonRun(seed??Environment.TickCount,modifiers,startFloor,runId,initialItems);
@@ -23,11 +30,16 @@ namespace LunaEclipse.Dungeon
   }
   void Update()
   {
-   if(Run==null||Busy||Modal||Run.Dead)return;
-   if(Input.GetKeyDown(KeyCode.W)||Input.GetKeyDown(KeyCode.UpArrow))Move(Vector2Int.up);
-   else if(Input.GetKeyDown(KeyCode.S)||Input.GetKeyDown(KeyCode.DownArrow))Move(Vector2Int.down);
-   else if(Input.GetKeyDown(KeyCode.A)||Input.GetKeyDown(KeyCode.LeftArrow))Move(Vector2Int.left);
-   else if(Input.GetKeyDown(KeyCode.D)||Input.GetKeyDown(KeyCode.RightArrow))Move(Vector2Int.right);
+   if(Run==null||Modal||Run.Dead){ClearHeldInput();return;}
+   Vector2Int key=Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow)?Vector2Int.up:
+    Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)?Vector2Int.down:
+    Input.GetKey(KeyCode.A)||Input.GetKey(KeyCode.LeftArrow)?Vector2Int.left:
+    Input.GetKey(KeyCode.D)||Input.GetKey(KeyCode.RightArrow)?Vector2Int.right:Vector2Int.zero;
+   if(!Application.isFocused)key=Vector2Int.zero;
+   if(key!=keyboardDirection){keyboardDirection=key;nextKeyboardMove=Time.unscaledTime;keyboardFirst=true;}
+   if(Busy)return;
+   if(heldDirection!=Vector2Int.zero&&Time.unscaledTime>=nextHeldMove){nextHeldMove=Time.unscaledTime+DungeonRules.HoldRepeat;Move(heldDirection);}
+   else if(key!=Vector2Int.zero&&Time.unscaledTime>=nextKeyboardMove){nextKeyboardMove=Time.unscaledTime+(keyboardFirst?DungeonRules.HoldDelay:DungeonRules.HoldRepeat);keyboardFirst=false;Move(key);}
    else if(Input.GetKeyDown(KeyCode.Space)||Input.GetKeyDown(KeyCode.J))Attack();
    else if(Input.GetKeyDown(KeyCode.Period))Wait();
    else if(Input.GetKeyDown(KeyCode.E))PickUp();
@@ -42,22 +54,22 @@ namespace LunaEclipse.Dungeon
   void Act(Func<bool> action)
   {
    if(Busy||Modal||Run==null||Run.Dead)return;
-   int oldHp=Run.Hp,oldFloor=Run.Floor;bool accepted=action();
+   int oldHp=Run.Hp,oldFloor=Run.Floor,oldPickup=Run.PickupSequence;bool accepted=action();
    if(!accepted){Renderer.Refresh(Run);UI.Refresh(Run,false);return;}
-   turns.Begin(PlayTurn(oldHp,oldFloor));
+   turns.Begin(PlayTurn(oldHp,oldFloor,Run.PickupSequence!=oldPickup));
   }
-  IEnumerator PlayTurn(int oldHp,int oldFloor)
+  IEnumerator PlayTurn(int oldHp,int oldFloor,bool autoPickup)
   {
    UI.Refresh(Run,true);
    if(Run.LastAction=="attack")Play(attackSound);
-   if(Run.LastAction=="pickup")Play(pickupSound);
+   if(Run.LastAction=="pickup"||autoPickup)Play(pickupSound);
    if(Run.Floor!=oldFloor){Renderer.Refresh(Run);yield return null;}
    else yield return Renderer.Animate(Run,.14f);
    if(Run.Hp<oldHp)Play(hitSound);
    Renderer.Refresh(Run);UI.Refresh(Run,false);
   }
   void Play(AudioClip clip){if(clip!=null)sound.PlayOneShot(clip,LocalSettings.SeVolume);}
-  public void SetModal(bool value){Modal=value;}
+  public void SetModal(bool value){Modal=value;if(value)ClearHeldInput();}
   public void Restart(){if(Busy)return;if(completeRun!=null&&!completeRun(Run)){UI.ShowSaveFailure(Restart);return;}Modal=false;Run=new DungeonRun(Environment.TickCount,modifiers,startFloor);Renderer.Refresh(Run);UI.Refresh(Run,false);}
   public void ReturnToHub(){if(Busy)return;if(completeRun!=null&&!completeRun(Run)){UI.ShowSaveFailure(ReturnToHub);return;}returnToHub?.Invoke();}
  }

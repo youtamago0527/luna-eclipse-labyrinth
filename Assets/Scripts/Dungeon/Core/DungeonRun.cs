@@ -45,7 +45,7 @@ namespace LunaEclipse.Dungeon
             {
                 if(item==null||string.IsNullOrWhiteSpace(item.Id)||Bag.Exists(i=>i.Id==item.Id)||Bag.Count>=BagCapacity)
                     throw new System.ArgumentException("Invalid expedition loadout");
-                Bag.Add(new ItemData{Id=item.Id,Kind=item.Kind,Name=item.Name,Enhancement=item.Enhancement});
+                Bag.Add(new ItemData{Id=item.Id,Kind=item.Kind,Name=item.Name,Enhancement=item.Enhancement,Identified=item.Identified});
             }
             EnterFloor();
             Log("月影の迷宮へ。近くの薬草を拾ってみよう。");
@@ -59,9 +59,8 @@ namespace LunaEclipse.Dungeon
             if (!Map.Walkable(next)) { LastAction = "blocked"; Log("壁には進めない。"); return false; }
             PlayerCell = next; LastAction = "move";
             Map.Reveal(PlayerCell);
-            if (Items.Exists(item => item.Cell == next)) Log(Items.Find(item=>item.Cell==next).Item.DisplayName+"を見つけた。「拾う」でバッグへ。");
-            else if (next == Map.Stairs) Log("階段を見つけた。");
-            else Log("ルナは一歩進んだ。");
+            CollectAtFeet();
+            if (next == Map.Stairs) Log("階段を見つけた。");
             CompleteTurn(); return true;
         }
         public bool Attack()
@@ -92,15 +91,38 @@ namespace LunaEclipse.Dungeon
             LastAction = "pickup"; LastAttackCell = null; Log(item.Item.DisplayName + "を拾った。");
             CompleteTurn(); return true;
         }
+        public int PickupSequence {get;private set;}
+        void CollectAtFeet()
+        {
+            while(CanPickUp)
+            {
+                var item=Items.Find(i=>i.Cell==PlayerCell);
+                Items.Remove(item);Bag.Add(item.Item);PickupSequence++;
+                Log(item.Item.DisplayName+"を拾った。");
+            }
+            if(Items.Exists(i=>i.Cell==PlayerCell)&&Bag.Count>=BagCapacity)Log("バッグがいっぱい。アイテムは足元に残った。");
+        }
+        public bool IsCursedEquipped(string id)=> (WeaponId==id||ShieldId==id)&&Bag.Exists(i=>i.Id==id&&i.Cursed);
+        public void SortBag()
+        {
+            Bag.Sort((a,b)=> {int category=ItemCategory(a.Kind).CompareTo(ItemCategory(b.Kind));
+                if(category!=0)return category;int name=string.CompareOrdinal(a.Name,b.Name);
+                return name!=0?name:string.CompareOrdinal(a.Id,b.Id);});
+        }
+        static int ItemCategory(string kind)=>kind=="moon_sword"?0:kind=="moon_shield"?1:kind=="herb"?2:kind=="return_scroll"?3:4;
         public bool UseItem(string id)
         {
             if(Dead)return false;var item=Bag.Find(i=>i.Id==id);if(item==null)return false;
             var def=ContentCatalog.FindItem(item.Kind);if(def==null)return false;
             if(def.Equipment)
             {
+                string previous=item.Kind=="moon_sword"?WeaponId:ShieldId;
+                if(IsCursedEquipped(previous)){Log("呪われた装備は外せない。");return false;}
                 if(item.Kind=="moon_sword"){if(WeaponId==id)return false;WeaponId=id;}
                 else {if(ShieldId==id)return false;ShieldId=id;}
+                item.Identified=true;
                 Log(item.DisplayName+"を装備した。");
+                if(item.Cursed)Log("呪われていて外せない！");
             }
             else if(def.Healing>0)
             {
@@ -113,6 +135,7 @@ namespace LunaEclipse.Dungeon
         public bool DropItem(string id)
         {
             if(Dead)return false;var item=Bag.Find(i=>i.Id==id);if(item==null)return false;
+            if(IsCursedEquipped(id)){Log("呪われた装備は外せない。");return false;}
             Bag.Remove(item);if(WeaponId==id)WeaponId=null;if(ShieldId==id)ShieldId=null;
             Items.Add(new FloorItem{Cell=PlayerCell,Item=item});LastAction="drop";LastAttackCell=null;
             Log(item.DisplayName+"を足元に置いた。");CompleteTurn();return true;

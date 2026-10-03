@@ -6,8 +6,9 @@ namespace LunaEclipse.Progression
     [Serializable] public sealed class StoredItem
     {
         public string Id,Name,Kind; public int Enhancement;
-        public StoredItem Copy()=>new StoredItem{Id=Id,Name=Name,Kind=Kind,Enhancement=Enhancement};
-        public string DisplayName=>(Name??Id)+((Enhancement!=0||Kind=="weapon"||Kind=="armor")?" "+(Enhancement>=0?"+":"")+Enhancement:"");
+        public bool Identified;
+        public StoredItem Copy()=>new StoredItem{Id=Id,Name=Name,Kind=Kind,Enhancement=Enhancement,Identified=Identified};
+        public string DisplayName => new Dungeon.ItemData{Id=Id,Name=Name??Id,Kind=Kind,Enhancement=Enhancement,Identified=Identified}.DisplayName;
     }
     [Serializable] public sealed class InventoryProfile
     {

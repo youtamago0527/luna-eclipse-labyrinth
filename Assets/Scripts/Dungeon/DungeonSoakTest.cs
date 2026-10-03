@@ -102,7 +102,7 @@ namespace LunaEclipse.Dungeon
                     if(floor==1)
                     {
                         var herb=game.Run.Items.First(i=>i.Item.Kind=="herb");yield return Walk(game,herb.Cell);
-                        int count=game.Run.Bag.Count;game.PickUp();yield return Ready(game);Check(game.Run.Bag.Count==count+1,"pickup API");
+                        Check(game.Run.Bag.Any(i=>i.Id==herb.Item.Id),"automatic pickup");
                         int turns=game.Run.Turns;game.UseItem(herb.Item.Id);yield return Ready(game);
                         Check(game.Run.Turns==turns&&game.Run.Bag.Any(i=>i.Id==herb.Item.Id),"full HP use preserves item");
                     }

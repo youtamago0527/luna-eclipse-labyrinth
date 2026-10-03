@@ -83,8 +83,8 @@ namespace LunaEclipse.EditorTools
                 var exploration = new DungeonRun(92); exploration.Enemies.Clear();
                 var herb = exploration.Items.First(item => DungeonRules.Distance(item.Cell, exploration.PlayerCell) == 1);
                 exploration.Move(herb.Cell - exploration.PlayerCell);
-                Check(exploration.Bag.Count == 0 && exploration.CanPickUp, "Pickup is explicit");
-                Check(exploration.PickUp() && exploration.Bag.Count == 1, "Bag pickup");
+                Check(exploration.Bag.Count == 1 && !exploration.CanPickUp, "Walking automatically collects item");
+                Check(exploration.Bag[0].Id == herb.Item.Id, "Auto pickup preserves identity");
                 string carriedId = exploration.Bag[0].Id;
                 for (int floor = 1; floor <= 5; floor++)
                 {
@@ -103,7 +103,7 @@ namespace LunaEclipse.EditorTools
                 Check(!exploration.PickUp() && exploration.Bag.Count == 20 && exploration.Turns == turn, "Bag cap20 no lost item/action");
                 while (exploration.Turns < 1100) exploration.Wait();
                 Check(exploration.Satiety == 0 && exploration.Hp == 20, "Satiety zero has no unrequested starvation penalty");
-                checks.Add("Explicit pickup, bag20 cap, five consecutive floors preserve HP/bag/satiety and stay playable");
+                checks.Add("Auto pickup, bag20 cap, five consecutive floors preserve HP/bag/satiety and stay playable");
                 checks.Add("Satiety clamps at zero without adding starvation rules");
                 SaveReport(true, checks, null);
                 Debug.Log("Dungeon core checks passed: " + string.Join("; ", checks));

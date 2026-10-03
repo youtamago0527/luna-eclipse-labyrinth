@@ -41,7 +41,7 @@ namespace LunaEclipse {
     if(route=="dungeon"&&dungeon!=null)return;
     var limits=relics.GetBonus();expeditionId=Guid.NewGuid().ToString("N");
     if(!vault.RecoverInterrupted(limits.WarehouseCapacity)||!vault.BeginExpedition(expeditionId,limits.BagCapacity))next="departure";
-    else foreach(var item in vault.GetExpeditionItems(expeditionId))loadout.Add(new Dungeon.ItemData{Id=item.Id,Kind=item.Kind,Name=item.Name,Enhancement=item.Enhancement});
+    else foreach(var item in vault.GetExpeditionItems(expeditionId))loadout.Add(new Dungeon.ItemData{Id=item.Id,Kind=item.Kind,Name=item.Name,Enhancement=item.Enhancement,Identified=item.Identified});
    }
    route=next;foreach(Transform child in screen){child.gameObject.SetActive(false);Destroy(child.gameObject);}
    dungeon=null;designSize=next=="dungeon"?new Vector2(1170,2532):new Vector2(430,932);backing.color=next=="dungeon"?Color.clear:Color.black;Fit();
@@ -59,12 +59,14 @@ namespace LunaEclipse {
     dungeon=host.gameObject.AddComponent<Dungeon.GameManager>();dungeon.Initialise(host,()=>Navigate("results"),runModifiers:modifiers,initialFloor:qa?1:Mathf.Clamp(selectedFloor,1,bonus.MaxStartFloor),onCompleted:FinishRun,runId:expeditionId,initialItems:loadout);lastMusicFloor=0;
    }else Placeholder(next);
    foreach(var b in screen.GetComponentsInChildren<Button>())b.onClick.AddListener(()=>{if(click!=null)se.PlayOneShot(click,LocalSettings.SeVolume);});
-   if(next=="results")music.Play(LunaMusicPlayer.Mood.Return);else if(next!="dungeon")music.StopMusic();UpdateAudio();
+   UpdateAudio();
+   if(next=="dungeon"&&dungeon!=null){lastMusicFloor=dungeon.Run.Floor;music.Play(lastMusicFloor>=10?LunaMusicPlayer.Mood.Deep:LunaMusicPlayer.Mood.Exploration);}
+   else if(next=="results")music.Play(LunaMusicPlayer.Mood.Return);else music.StopMusic();
   }
   bool FinishRun(Dungeon.DungeonRun run){
    if(relics.CompleteRun(run.RunId,run.Floor,run.StartFloor)==null)return false;
    if(vault.Profile.DepositedRuns.Contains(run.RunId))return true;
-   var items=new List<StoredItem>();foreach(var item in run.Bag)items.Add(new StoredItem{Id=item.Id,Name=item.Name,Kind=item.Kind,Enhancement=item.Enhancement});
+   var items=new List<StoredItem>();foreach(var item in run.Bag)items.Add(new StoredItem{Id=item.Id,Name=item.Name,Kind=item.Kind,Enhancement=item.Enhancement,Identified=item.Identified});
    return vault.DepositRun(run.RunId,items,relics.GetBonus().WarehouseCapacity);
   }
   void Title(){UiKit.Picture(screen,"Hub/moon-ruins",0,0,430,932);var shade=UiKit.Panel(screen,new Color(0,0,.025f,.6f));UiKit.Place(shade.rectTransform,0,0,430,932);var moon=UiKit.Text(screen,"☾",72,Gold);UiKit.Place(moon.rectTransform,80,160,270,120);var title=UiKit.Text(screen,"ルナと月蝕の迷宮",32,Gold);UiKit.Place(title.rectTransform,18,312,394,85);var sub=UiKit.Text(screen,"月明かりに導かれ、姿を変える迷宮へ。",14,Color.white);UiKit.Place(sub.rectTransform,20,414,390,50);var start=UiKit.Button(screen,"冒険をはじめる",()=>Navigate("hub"));UiKit.Place((RectTransform)start.transform,55,550,320,72);var version=UiKit.Text(screen,"UNITY · ダンジョン基盤 第1段階",11,Color.gray);UiKit.Place(version.rectTransform,20,875,390,30);}

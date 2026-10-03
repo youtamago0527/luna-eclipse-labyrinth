@@ -37,7 +37,7 @@ namespace LunaEclipse.Dungeon
    int old=game.Run.Turns;game.Wait();game.Wait();game.Move(Vector2Int.up);Check(game.Run.Turns==old+1,"rapid input cannot overlap turns");yield return Ready(game);
    var herb=game.Run.Items[0];
    foreach(var cell in PathTo(game.Run,herb.Cell)){game.Move(cell-game.Run.PlayerCell);yield return Ready(game);}
-   Check(game.Run.CanPickUp,"pickup enabled on item");game.PickUp();yield return Ready(game);Check(game.Run.Bag.Count==1,"bag increments");
+   Check(!game.Run.CanPickUp,"item automatically removed from floor");Check(game.Run.Bag.Count==1,"bag increments");
    Check(HasLabel(game,"バッグ 1 / 20"),"bag HUD updates");
    var random=new System.Random(514);
    for(int i=0;i<100;i++){
