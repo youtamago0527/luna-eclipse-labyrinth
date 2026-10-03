@@ -13,7 +13,7 @@ namespace LunaEclipse.EditorTools
         static void Check(bool value,string label){if(!value)throw new Exception(label);checks++;}
         public static void Run()
         {
-            checks=0;var run=new DungeonRun(92);run.Enemies.Clear();
+            checks=0;var run=new DungeonRun(92){AmbientEncounters=false};run.Enemies.Clear();
             var herb=run.Items.First(i=>DungeonRules.Distance(i.Cell,run.PlayerCell)==1);int turns=run.Turns;
             run.Move(herb.Cell-run.PlayerCell);
             Check(run.Bag.Contains(herb.Item)&&!run.Items.Contains(herb),"auto pickup");

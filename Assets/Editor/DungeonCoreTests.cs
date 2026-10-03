@@ -39,7 +39,7 @@ namespace LunaEclipse.EditorTools
                 }
                 checks.Add("120 seeds: compact rooms, connected narrow passages/dead ends, safe spawns, hidden distant rooms, persistent explored fog");
 
-                var walking = new DungeonRun(123); walking.Enemies.Clear();
+                var walking = new DungeonRun(123){AmbientEncounters=false}; walking.Enemies.Clear();
                 for (int i = 0; i < 100; i++)
                 {
                     var direction = DungeonRules.Directions.First(dir => walking.Map.Walkable(walking.PlayerCell + dir));
@@ -80,7 +80,7 @@ namespace LunaEclipse.EditorTools
                 for (int i = 0; i < 100; i++) { crowd.Wait(); ValidatePositions(crowd); }
                 checks.Add("Pursuit never stacks enemies or overlaps player through 100 action requests");
 
-                var exploration = new DungeonRun(92); exploration.Enemies.Clear();
+                var exploration = new DungeonRun(92){AmbientEncounters=false}; exploration.Enemies.Clear();
                 var herb = exploration.Items.First(item => DungeonRules.Distance(item.Cell, exploration.PlayerCell) == 1);
                 exploration.Move(herb.Cell - exploration.PlayerCell);
                 Check(exploration.Bag.Count == 1 && !exploration.CanPickUp, "Walking automatically collects item");

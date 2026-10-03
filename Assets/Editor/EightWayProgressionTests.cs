@@ -13,7 +13,7 @@ namespace LunaEclipse.EditorTools
   static bool[,] Cells(DungeonRun r)=>(bool[,])typeof(DungeonMap).GetField("floor",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(r.Map);
   static DungeonRun Room()
   {
-   var r=new DungeonRun(21);r.Enemies.Clear();r.Items.Clear();
+   var r=new DungeonRun(21){AmbientEncounters=false};r.Enemies.Clear();r.Items.Clear();
    var f=Cells(r);Array.Clear(f,0,f.Length);
    for(int x=5;x<=11;x++)for(int y=5;y<=11;y++)f[x,y]=true;
    Set(r,"PlayerCell",new Vector2Int(8,8));r.Map.Reveal(r.PlayerCell);return r;

@@ -39,6 +39,10 @@ namespace LunaEclipse.Dungeon
         public bool CanPickUp => !Dead && Bag.Count < BagCapacity && Items.Exists(item => item.Cell == PlayerCell);
         public bool CanDescend => !Dead && PlayerCell == Map.Stairs;
         private readonly int seed;
+        EncounterDirector encounters;
+        public int FloorTurns {get;private set;}
+        // Can be disabled by isolated regression fixtures, never disabled by normal game routes.
+        public bool AmbientEncounters {get;set;} = true;
 
         public DungeonRun(int seed,RunModifiers modifiers=null,int startFloor=1,string runId=null,IEnumerable<ItemData> initialItems=null)
         {
@@ -178,6 +182,7 @@ namespace LunaEclipse.Dungeon
         private void SpendTurn()
         {
             Turns++;
+            FloorTurns++;
             if (Turns % SatietyInterval == 0) Satiety = Mathf.Max(0, Satiety - 1);
         }
         private void CompleteTurn()
@@ -195,24 +200,18 @@ namespace LunaEclipse.Dungeon
                 }
                 else if (EnemyAI.Recognizes(Map, enemy.Cell, PlayerCell))
                     enemy.Cell = EnemyAI.NextStep(Map, enemy, PlayerCell, Enemies);
+                else if(AmbientEncounters)enemy.Cell=encounters.Wander(this,enemy);
             }
             Recover();
+            // Spawn after the enemy phase: a new monster cannot attack on its birth turn.
+            if(AmbientEncounters)encounters.Reinforce(this,FloorTurns);
         }
         private void EnterFloor()
         {
             Map = DungeonGenerator.Generate(seed, Floor); PlayerCell = Map.Start; Facing = Vector2Int.down;
             Items.Clear(); Items.AddRange(ItemManager.CreateItems(Map, seed, Floor,Modifiers.EquipmentEnhancement)); Enemies.Clear();
             foreach(var item in Items)item.Item.Id=RunId+":"+item.Item.Id;
-            var candidates = Map.FloorCells();
-            DungeonGenerator.Shuffle(candidates, new System.Random(unchecked(seed ^ Floor * 1709)));
-            foreach (var cell in candidates)
-            {
-                if (Enemies.Count >= DungeonRules.EnemyCount) break;
-                if (DungeonRules.Distance(cell, PlayerCell) < 5 || cell == Map.Stairs || Items.Exists(item => item.Cell == cell)) continue;
-                var type=ContentCatalog.Monsters[(Enemies.Count+(Floor-1)/3)%ContentCatalog.Monsters.Length];
-                int depth=(Floor-1)/5;
-                Enemies.Add(new EnemyData { Id = Enemies.Count + 1, Cell = cell,Archetype=type.Id,Hp=type.Hp+depth,MaximumHp=type.Hp+depth,AttackPower=type.Attack+depth/2 });
-            }
+            FloorTurns=0;encounters=new EncounterDirector(seed,Floor);encounters.Populate(this);
         }
     }
 }

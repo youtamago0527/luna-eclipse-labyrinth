@@ -33,7 +33,7 @@ namespace LunaEclipse.Dungeon
    Check(Vector2.Distance(worldCamera.transform.position,game.Run.PlayerCell)<.01f,"entry camera centred on Luna");
    Click(game,"持ち物");Check(game.Modal,"bag opens");int modalTurns=game.Run.Turns;game.Wait();Check(game.Run.Turns==modalTurns,"modal blocks commands");Click(game,"閉じる");yield return null;Check(!game.Modal,"bag closes");
    // Isolate render/input stress from combat; separately verify combat below.
-   game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);
+   game.Run.AmbientEncounters=false;game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);
    int old=game.Run.Turns;game.Wait();game.Wait();game.Move(Vector2Int.up);Check(game.Run.Turns==old+1,"rapid input cannot overlap turns");yield return Ready(game);
    var herb=game.Run.Items[0];
    foreach(var cell in PathTo(game.Run,herb.Cell)){game.Move(cell-game.Run.PlayerCell);yield return Ready(game);}

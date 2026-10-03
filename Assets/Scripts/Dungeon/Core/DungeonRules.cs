@@ -7,7 +7,7 @@ namespace LunaEclipse.Dungeon
     {
         public const int Width = 39, Height = 45;
         public const int PlayerHp = 20, PlayerAttack = 2;
-        public const int EnemyHp = 5, EnemyAttack = 1, EnemyCount = 3;
+        public const int EnemyHp = 5, EnemyAttack = 1;
         public const int BagCapacity = 20, MaximumSatiety = 100, SatietyTurnInterval = 5;
         public const int AwarenessRadius = 7, LanternRadius = 4;
         public const int NegativeEquipmentPercent = 5, ItemsPerPage = 10;

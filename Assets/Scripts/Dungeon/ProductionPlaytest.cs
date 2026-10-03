@@ -209,7 +209,7 @@ namespace LunaEclipse.Dungeon
             Click("探索を始める");yield return null;Route("dungeon");
             var game=FindFirstObjectByType<GameManager>();Check(game!=null,"runtime manager");
             yield return new WaitForSecondsRealtime(1.1f);Audio("luna-moonlit-footsteps");yield return Capture("04-dungeon");
-            game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);
+            game.Run.AmbientEncounters=false;game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);
             var center=game.Run.Map.FloorCells().First(c=>DungeonRules.MovementDirections.All(d=>DungeonRules.CanStep(game.Run.Map,c,c+d)));
             foreach(var cell in PathTo(game.Run,center)){game.Move(cell-game.Run.PlayerCell);yield return Ready(game);}
             foreach(var d in DungeonRules.MovementDirections.Where(d=>d.x!=0&&d.y!=0))

@@ -46,7 +46,7 @@ namespace LunaEclipse.EditorTools
 
         private static DungeonRun QuietRun(int seed = 31, RunModifiers modifiers = null, int floor = 1)
         {
-            var run = new DungeonRun(seed, modifiers, floor);
+            var run = new DungeonRun(seed, modifiers, floor){AmbientEncounters=false};
             run.Enemies.Clear(); return run;
         }
 
