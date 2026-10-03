@@ -12,9 +12,9 @@ namespace LunaEclipse.Dungeon
         static readonly Color Pale = new Color(.89f,.9f,.98f);
         GameManager manager;
         RectTransform root, modal;
-        Text floor, hp, belly, bag, logs;
+        Text floor, hp, belly, bag, logs, level;
         Image hpFill, logBackdrop, controlBackdrop, controlLine;
-        Button pickup, stairs, attack, wait, bagButton;
+        Button pickup, stairs, attack, wait, bagButton, rest;
         readonly List<Button> movement = new List<Button>();
         RawImage mini;
         Texture2D mapTexture;
@@ -31,7 +31,7 @@ namespace LunaEclipse.Dungeon
             root=parent; manager=game;
             Panel(root,0,0,1170,DungeonPresentation.HeaderHeight,Ink);
             controlBackdrop=Panel(root,0,DungeonPresentation.ControlsTop,1170,402,Ink);
-            Label(root,"月蝕迷宮",32,Pale,36,12,430,44);
+            level=Label(root,"Lv.1",30,Pale,36,12,630,44);
             floor=Label(root,"B1F",48,Pale,36,62,160,70);
             hp=Label(root,"HP 20 / 20",33,Pale,220,62,550,48);
             Panel(root,220,119,540,18,new Color(.16f,.12f,.22f));
@@ -51,7 +51,14 @@ namespace LunaEclipse.Dungeon
             movement.Add(Button(root,"◀",34,2266,140,132,()=>manager.Move(Vector2Int.left)));
             movement.Add(Button(root,"▶",326,2266,140,132,()=>manager.Move(Vector2Int.right)));
             movement.Add(Button(root,"▼",180,2398,140,132,()=>manager.Move(Vector2Int.down)));
-            var directions=new[]{Vector2Int.up,Vector2Int.left,Vector2Int.right,Vector2Int.down};
+            movement.Add(Button(root,"↖",34,2134,140,132,()=>{}));
+            movement.Add(Button(root,"↗",326,2134,140,132,()=>{}));
+            movement.Add(Button(root,"↙",34,2398,140,132,()=>{}));
+            movement.Add(Button(root,"↘",326,2398,140,132,()=>{}));
+            rest=Button(root,"足踏み\n長押し",180,2266,140,132,()=>{});
+            rest.GetComponentInChildren<Text>().fontSize=28;
+            rest.gameObject.AddComponent<HoldRestButton>().Manager=manager;
+            var directions=new[]{Vector2Int.up,Vector2Int.left,Vector2Int.right,Vector2Int.down,new Vector2Int(-1,1),new Vector2Int(1,1),new Vector2Int(-1,-1),new Vector2Int(1,-1)};
             for(int i=0;i<movement.Count;i++)
             {
                 movement[i].onClick.RemoveAllListeners();
@@ -81,6 +88,7 @@ namespace LunaEclipse.Dungeon
             if(!force&&compact==compactControls)return;
             compactControls=compact;controlsTop=compact?1998: DungeonPresentation.ControlsTop;
             floor.fontSize=compact?54:48;hp.fontSize=compact?44:33;
+            level.fontSize=compact?40:30;rest.GetComponentInChildren<Text>().fontSize=compact?40:30;
             belly.fontSize=bag.fontSize=compact?40:30;logs.fontSize=compact?44:30;
             foreach(var b in movement)b.GetComponentInChildren<Text>().fontSize=compact?44:36;
             foreach(var b in new[]{wait,pickup,bagButton})b.GetComponentInChildren<Text>().fontSize=compact?44:36;
@@ -94,6 +102,11 @@ namespace LunaEclipse.Dungeon
                 PlaceControl(movement[1],16,2178,176,176);
                 PlaceControl(movement[2],388,2178,176,176);
                 PlaceControl(movement[3],202,2354,176,176);
+                PlaceControl(movement[4],16,2002,176,176);
+                PlaceControl(movement[5],388,2002,176,176);
+                PlaceControl(movement[6],16,2354,176,176);
+                PlaceControl(movement[7],388,2354,176,176);
+                PlaceControl(rest,202,2178,176,176);
                 PlaceControl(attack,584,2002,330,344);
                 PlaceControl(stairs,584,2354,330,176);
                 PlaceControl(wait,934,2002,220,176);
@@ -106,6 +119,11 @@ namespace LunaEclipse.Dungeon
                 PlaceControl(movement[1],34,2266,140,132);
                 PlaceControl(movement[2],326,2266,140,132);
                 PlaceControl(movement[3],180,2398,140,132);
+                PlaceControl(movement[4],34,2134,140,132);
+                PlaceControl(movement[5],326,2134,140,132);
+                PlaceControl(movement[6],34,2398,140,132);
+                PlaceControl(movement[7],326,2398,140,132);
+                PlaceControl(rest,180,2266,140,132);
                 PlaceControl(attack,510,2148,354,232);
                 PlaceControl(stairs,510,2398,354,132);
                 PlaceControl(wait,892,2134,246,132);
@@ -120,6 +138,7 @@ namespace LunaEclipse.Dungeon
         public void Refresh(DungeonRun run,bool isBusy)
         {
             current=run;busy=isBusy;
+            level.text="Lv."+run.Level+"  次まで "+run.NextLevelExperience+" EXP";
             floor.text="B"+run.Floor+"F";hp.text="HP "+run.Hp+" / "+run.MaxHp;
             UiKit.Place(hpFill.rectTransform,220,119,540*Mathf.Clamp01(run.MaxHp>0?(float)run.Hp/run.MaxHp:0),18);
             belly.text="満腹 "+run.Satiety+" / "+DungeonRules.MaximumSatiety;bag.text="バッグ "+run.Bag.Count+" / "+run.BagCapacity;
@@ -131,6 +150,7 @@ namespace LunaEclipse.Dungeon
             UiKit.Place(logs.rectTransform,42,logTop+8,1086,logHeight-16);
             bool enabled=!busy&&!run.Dead&&modal==null;
             foreach(var button in movement)SetEnabled(button,!run.Dead&&modal==null);
+            SetEnabled(rest,run.CanRest&&modal==null);
             SetEnabled(attack,enabled);SetEnabled(wait,enabled);SetEnabled(bagButton,!busy&&!run.Dead&&modal==null);
             SetEnabled(pickup,enabled&&run.CanPickUp);SetEnabled(stairs,enabled&&run.CanDescend);
             RefreshMap(run);
@@ -222,7 +242,11 @@ namespace LunaEclipse.Dungeon
             var def=ContentCatalog.FindItem(item.Kind);bool equipped=current.WeaponId==id||current.ShieldId==id;
             BeginModal(item.DisplayName);
             var icon=Panel(modal,440,670,290,290,Color.white);icon.sprite=ArtLibrary.Load(def?.SpriteResource);icon.preserveAspect=true;icon.raycastTarget=false;if(icon.sprite==null)icon.color=Color.clear;
-            Label(modal,item.Equipment&&!item.Identified?"強化値は未鑑定。装備すると判明します。\nマイナス装備は呪われて外せなくなります。":def?.Description??"",36,Pale,122,980,926,180);
+            string description=def?.Description??"";
+            if(item.Equipment) description=(item.Kind=="moon_sword"?"武器攻撃力":"盾防御力")+"：基礎 1 / 強化 "+
+                (item.Identified?item.Enhancement.ToString():"?")+" / 合計 "+(item.Identified?(1L+item.Enhancement).ToString():"?")+"\n"+
+                (!item.Identified?"装備で鑑定。マイナスは呪いで外せません。":description);
+            Label(modal,description,36,Pale,122,980,926,180);
             var use=Button(modal,equipped?"装備中":item.Equipment?"装備":"使う",122,1220,926,150,()=>{CloseModal();manager.UseItem(id);});SetEnabled(use,!equipped&&def!=null&&(def.Equipment||def.Healing>0));
             var drop=Button(modal,"置く",122,1410,926,150,()=>{CloseModal();Confirm(item.DisplayName+"を足元に置きますか？",()=>manager.DropItem(id));});SetEnabled(drop,!current.IsCursedEquipped(id));
             Button(modal,"持ち物へ",122,1700,926,150,()=>{CloseModal();ShowBag();});

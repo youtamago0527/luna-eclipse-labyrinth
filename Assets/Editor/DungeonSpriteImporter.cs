@@ -8,6 +8,15 @@ public sealed class DungeonSpriteImporter : AssetPostprocessor
     {
         if (!assetPath.StartsWith("Assets/Resources/Luna/")) return;
         var importer = (TextureImporter)assetImporter;
+        if(assetPath.EndsWith("diagonal-atlas.png"))
+        {
+            importer.textureType=TextureImporterType.Default;
+            importer.isReadable=true;importer.mipmapEnabled=false;
+            importer.alphaIsTransparency=true;importer.filterMode=FilterMode.Point;
+            importer.textureCompression=TextureImporterCompression.Uncompressed;
+            importer.npotScale=TextureImporterNPOTScale.None;importer.maxTextureSize=2048;
+            return;
+        }
         importer.textureType = TextureImporterType.Sprite;
         importer.spriteImportMode = SpriteImportMode.Single;
         importer.spritePixelsPerUnit = 150;

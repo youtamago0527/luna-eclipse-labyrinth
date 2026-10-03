@@ -86,7 +86,7 @@ namespace LunaEclipse.Dungeon
             var observation=new BoundaryObservation{screen=name,width=Screen.width,height=Screen.height,safeArea=Screen.safeArea};
             var outside=new List<string>();var corners=new Vector3[4];
             var controls=new List<GameplayControlSize>();var smallControls=new List<string>();
-            var gameplayNames=new HashSet<string>{"▲","◀","▶","▼","攻撃","待機","拾う","持ち物","階段を降りる"};
+            var gameplayNames=new HashSet<string>{"▲","◀","▶","▼","↖","↗","↙","↘","足踏み\n長押し","攻撃","待機","拾う","持ち物","階段を降りる"};
             foreach(var button in app.GetComponentsInChildren<Button>(true))
             {
                 // Scroll contents may legitimately extend beyond their clipped viewport.
@@ -210,6 +210,23 @@ namespace LunaEclipse.Dungeon
             var game=FindFirstObjectByType<GameManager>();Check(game!=null,"runtime manager");
             yield return new WaitForSecondsRealtime(1.1f);Audio("luna-moonlit-footsteps");yield return Capture("04-dungeon");
             game.Run.Enemies.Clear();game.Renderer.Refresh(game.Run);
+            var center=game.Run.Map.FloorCells().First(c=>DungeonRules.MovementDirections.All(d=>DungeonRules.CanStep(game.Run.Map,c,c+d)));
+            foreach(var cell in PathTo(game.Run,center)){game.Move(cell-game.Run.PlayerCell);yield return Ready(game);}
+            foreach(var d in DungeonRules.MovementDirections.Where(d=>d.x!=0&&d.y!=0))
+            {
+                var origin=game.Run.PlayerCell;game.Move(d);yield return Ready(game);
+                Check(game.Run.PlayerCell==origin+d,"diagonal runtime move");
+                yield return Capture("04-diagonal-"+d.x+"-"+d.y);
+                game.Move(-d);yield return Ready(game);
+            }
+            typeof(DungeonRun).GetProperty("Hp").SetValue(game.Run,game.Run.MaxHp-2);
+            game.UI.Refresh(game.Run,false);
+            var restButton=game.GetComponentInChildren<HoldRestButton>();
+            var restPointer=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){pointerId=8};
+            int restTurns=game.Run.Turns;restButton.OnPointerDown(restPointer);
+            yield return new WaitForSecondsRealtime(.75f);restButton.OnPointerUp(restPointer);yield return Ready(game);
+            Check(game.Run.Turns>restTurns,"rest pointer repeats turns");
+            restTurns=game.Run.Turns;yield return new WaitForSecondsRealtime(.5f);Check(game.Run.Turns==restTurns,"rest release stops");
             var held=game.GetComponentsInChildren<HoldMoveButton>().First(h=>game.Run.Map.Walkable(game.Run.PlayerCell+h.Direction*2));
             var pointer=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){pointerId=7};
             int heldTurns=game.Run.Turns;held.OnPointerDown(pointer);

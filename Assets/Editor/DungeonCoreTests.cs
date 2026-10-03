@@ -55,7 +55,7 @@ namespace LunaEclipse.EditorTools
                 int turn = walking.Turns; var originalCell = walking.PlayerCell;
                 Check(!walking.Move(wall), "Wall rejects movement");
                 Check(walking.Turns == turn && walking.PlayerCell == originalCell && walking.Facing == wall, "Wall changes facing only");
-                Check(!walking.Move(new Vector2Int(1, 1)), "Diagonal not enabled");
+                Check(!walking.Move(new Vector2Int(2, 1)), "Non-unit movement rejected");
                 checks.Add("100 accepted movements, exact cell increments, wall facing/no turn, 5-turn satiety");
 
                 var battle = new DungeonRun(14); battle.Enemies.Clear();

@@ -13,9 +13,12 @@ namespace LunaEclipse.Dungeon
   TurnManager turns; Action returnToHub; Func<DungeonRun,bool> completeRun; RunModifiers modifiers; int startFloor;
   AudioSource sound; AudioClip attackSound,hitSound,pickupSound;
   Vector2Int heldDirection,keyboardDirection; float nextHeldMove,nextKeyboardMove; bool keyboardFirst;
-  public void BeginMoveHold(Vector2Int direction){if(Modal||Run==null||Run.Dead)return;heldDirection=direction;nextHeldMove=Time.unscaledTime+DungeonRules.HoldDelay;Move(direction);}
+  bool resting;
+  public void BeginRestHold(){ClearHeldInput();if(!Modal&&Run!=null&&Run.CanRest)resting=true;}
+  public void EndRestHold(){resting=false;}
+  public void BeginMoveHold(Vector2Int direction){if(Modal||Run==null||Run.Dead)return;resting=false;heldDirection=direction;nextHeldMove=Time.unscaledTime+DungeonRules.HoldDelay;Move(direction);}
   public void EndMoveHold(Vector2Int direction){if(heldDirection==direction)heldDirection=Vector2Int.zero;}
-  void ClearHeldInput(){heldDirection=keyboardDirection=Vector2Int.zero;}
+  void ClearHeldInput(){heldDirection=keyboardDirection=Vector2Int.zero;resting=false;}
   void OnApplicationFocus(bool focused){if(!focused)ClearHeldInput();}
   void OnApplicationPause(bool paused){if(paused)ClearHeldInput();}
   void OnDisable(){ClearHeldInput();}
@@ -31,22 +34,23 @@ namespace LunaEclipse.Dungeon
   void Update()
   {
    if(Run==null||Modal||Run.Dead){ClearHeldInput();return;}
-   Vector2Int key=Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow)?Vector2Int.up:
-    Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)?Vector2Int.down:
-    Input.GetKey(KeyCode.A)||Input.GetKey(KeyCode.LeftArrow)?Vector2Int.left:
-    Input.GetKey(KeyCode.D)||Input.GetKey(KeyCode.RightArrow)?Vector2Int.right:Vector2Int.zero;
+   int x=(Input.GetKey(KeyCode.D)||Input.GetKey(KeyCode.RightArrow)?1:0)-(Input.GetKey(KeyCode.A)||Input.GetKey(KeyCode.LeftArrow)?1:0);
+   int y=(Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow)?1:0)-(Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)?1:0);
+   Vector2Int key=new Vector2Int(x,y);
    if(!Application.isFocused)key=Vector2Int.zero;
    if(key!=keyboardDirection){keyboardDirection=key;nextKeyboardMove=Time.unscaledTime;keyboardFirst=true;}
    if(Busy)return;
+   if(!Run.CanRest)resting=false;
+   if(resting&&key==Vector2Int.zero){Act(()=>Run.Rest());return;}
    if(heldDirection!=Vector2Int.zero&&Time.unscaledTime>=nextHeldMove){nextHeldMove=Time.unscaledTime+DungeonRules.HoldRepeat;Move(heldDirection);}
    else if(key!=Vector2Int.zero&&Time.unscaledTime>=nextKeyboardMove){nextKeyboardMove=Time.unscaledTime+(keyboardFirst?DungeonRules.HoldDelay:DungeonRules.HoldRepeat);keyboardFirst=false;Move(key);}
    else if(Input.GetKeyDown(KeyCode.Space)||Input.GetKeyDown(KeyCode.J))Attack();
    else if(Input.GetKeyDown(KeyCode.Period))Wait();
    else if(Input.GetKeyDown(KeyCode.E))PickUp();
   }
-  public void Move(Vector2Int direction)=>Act(()=>Run.Move(direction));
-  public void Attack()=>Act(()=>Run.Attack());
-  public void Wait()=>Act(()=>Run.Wait());
+  public void Move(Vector2Int direction){resting=false;Act(()=>Run.Move(direction));}
+  public void Attack(){resting=false;Act(()=>Run.Attack());}
+  public void Wait(){resting=false;Act(()=>Run.Wait());}
   public void PickUp()=>Act(()=>Run.PickUp());
   public void UseItem(string id)=>Act(()=>Run.UseItem(id));
   public void DropItem(string id)=>Act(()=>Run.DropItem(id));

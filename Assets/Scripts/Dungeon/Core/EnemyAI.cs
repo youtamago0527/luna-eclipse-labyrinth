@@ -22,10 +22,10 @@ namespace LunaEclipse.Dungeon
             while (queue.Count > 0)
             {
                 var cell = queue.Dequeue();
-                foreach (var direction in DungeonRules.Directions)
+                foreach (var direction in DungeonRules.MovementDirections)
                 {
                     var next = cell + direction;
-                    if (!map.Walkable(next) || occupied.Contains(next) || firstStep.ContainsKey(next)) continue;
+                    if (!DungeonRules.CanStep(map,cell,next) || occupied.Contains(next) || firstStep.ContainsKey(next)) continue;
                     var first = cell == enemy.Cell ? next : firstStep[cell];
                     if (next == player) return first == player ? enemy.Cell : first;
                     firstStep[next] = first; queue.Enqueue(next);

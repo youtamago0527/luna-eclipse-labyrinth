@@ -162,9 +162,9 @@ namespace LunaEclipse.EditorTools
             Expect(run.Bag.Contains(herb), "full HP does not consume herb");
             for (int i = 0; i < 4; i++) run.Wait();
             run.Enemies.Add(new EnemyData { Id = 901, Cell = run.PlayerCell + Vector2Int.right,
-                Hp = 20, MaximumHp = 20, AttackPower = 9 });
+                Hp = 20, MaximumHp = 20, AttackPower = 10 });
             run.Wait(); run.Enemies.Clear();
-            Equal(run.Hp, 11, "fixed setup damage"); Equal(run.Satiety, 99, "fifth action consumes satiety");
+            Equal(run.Hp, 11, "ten damage then one natural recovery"); Equal(run.Satiety, 99, "fifth action consumes satiety");
             int satiety = run.Satiety;
             AcceptedOnce(run, () => run.UseItem(herb.Id), "herb use");
             Equal(run.Hp, 19, "herb restores exactly eight HP");

@@ -71,6 +71,7 @@ namespace LunaEclipse.Dungeon
             player = Entity("Luna", null, 30);
             var reference = luna["idle/down"][0];
             float bodyHeight = reference.bounds.size.y * DungeonPresentation.LunaBodyCanvasRatio;
+            LoadDiagonalFrames(bodyHeight);
             // Normalise actual imported geometry, including any importer/atlas rescaling.
             // A single scale for every direction/frame avoids animation size jitter.
             player.transform.localScale = Vector3.one * (DungeonPresentation.LunaHeight / bodyHeight);
@@ -236,9 +237,40 @@ namespace LunaEclipse.Dungeon
         void SetPlayerFrame(DungeonRun run, string action, float time)
         {
             string direction = run.Facing.x < 0 ? "left" : run.Facing.x > 0 ? "right" : run.Facing.y > 0 ? "up" : "down";
+            if(run.Facing.x!=0&&run.Facing.y!=0)direction=(run.Facing.y>0?"up":"down")+(run.Facing.x<0?"left":"right");
             Sprite[] frames = luna[action + "/" + direction];
             player.sprite = frames[Mathf.Min(frames.Length - 1, Mathf.FloorToInt(time * frames.Length))];
             player.enabled = player.sprite != null;
+        }
+        void LoadDiagonalFrames(float bodyHeight)
+        {
+            var atlas=Resources.Load<Texture2D>("Luna/diagonal-atlas");
+            if(atlas==null)throw new InvalidOperationException("Missing Luna diagonal atlas");
+            int w=atlas.width/4,h=atlas.height/4;var pixels=atlas.GetPixels32();
+            var rects=new Rect[16];int maxHeight=1;
+            for(int row=0;row<4;row++)for(int col=0;col<4;col++)
+            {
+                int ox=col*w,oy=(3-row)*h,minX=w,minY=h,maxX=0,maxY=0;
+                for(int y=0;y<h;y++)for(int x=0;x<w;x++)if(pixels[(oy+y)*atlas.width+ox+x].a>20)
+                {minX=Mathf.Min(minX,x);minY=Mathf.Min(minY,y);maxX=Mathf.Max(maxX,x);maxY=Mathf.Max(maxY,y);}
+                if(minX>maxX)throw new InvalidOperationException("Empty diagonal frame");
+                rects[row*4+col]=new Rect(ox+minX,oy+minY,maxX-minX+1,maxY-minY+1);
+                maxHeight=Mathf.Max(maxHeight,maxY-minY+1);
+            }
+            string[] names={"downleft","downright","upleft","upright"};
+            for(int row=0;row<4;row++)
+            {
+                var frames=new Sprite[4];
+                for(int col=0;col<4;col++)
+                {
+                    frames[col]=Sprite.Create(atlas,rects[row*4+col],new Vector2(.5f,0),maxHeight/bodyHeight,0,SpriteMeshType.FullRect);
+                    generated.Add(frames[col]);
+                }
+                luna["walk/"+names[row]]=frames;
+                luna["idle/"+names[row]]=new[]{frames[0]};
+                // No invented diagonal slash sheet: retain facing and use a short step gesture.
+                luna["attack/"+names[row]]=new[]{frames[0],frames[1],frames[0]};
+            }
         }
         static Vector3 Position(Vector2Int cell) => new Vector3(cell.x, cell.y, 0);
         SpriteRenderer Entity(string name, Sprite sprite, int order)

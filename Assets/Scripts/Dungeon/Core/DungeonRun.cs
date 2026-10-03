@@ -10,7 +10,10 @@ namespace LunaEclipse.Dungeon
         public Vector2Int PlayerCell { get; private set; }
         public Vector2Int Facing { get; private set; } = Vector2Int.down;
         public int Hp { get; private set; } = DungeonRules.PlayerHp;
-        public int MaxHp => DungeonRules.PlayerHp;
+        public int Level {get;private set;} = 1;
+        public int Experience {get;private set;}
+        public int NextLevelExperience => Level>=DungeonRules.MaximumLevel ? 0 : DungeonRules.ExperienceForLevel(Level+1)-Experience;
+        public int MaxHp => DungeonRules.PlayerHp + (Level-1)*DungeonRules.HpPerLevel;
         public string RunId {get;}
         public int StartFloor {get;}
         public RunModifiers Modifiers {get;}
@@ -18,7 +21,8 @@ namespace LunaEclipse.Dungeon
         public int SatietyInterval => BoundedStat((long)DungeonRules.SatietyTurnInterval+Modifiers.SatietyIntervalBonus,1);
         public string WeaponId {get;private set;}
         public string ShieldId {get;private set;}
-        public int AttackPower => BoundedStat(DungeonRules.PlayerAttack+EquippedBonus(WeaponId),1);
+        public int BaseAttackPower => DungeonRules.PlayerAttack+(Level-1)/2;
+        public int AttackPower => BoundedStat(BaseAttackPower+EquippedBonus(WeaponId),1);
         public int DefensePower => BoundedStat(EquippedBonus(ShieldId),0);
         long EquippedBonus(string id){var item=Bag.Find(i=>i.Id==id);return item==null?0L:(long)item.Enhancement+1;}
         static int BoundedStat(long value,int minimum)=>(int)System.Math.Max(minimum,System.Math.Min(int.MaxValue,value));
@@ -52,9 +56,10 @@ namespace LunaEclipse.Dungeon
         }
         public bool Move(Vector2Int direction)
         {
-            if (Dead || !DungeonRules.IsCardinal(direction)) return false;
+            if (Dead || !DungeonRules.IsDirection(direction)) return false;
             Facing = direction; LastAttackCell = null;
             var next = PlayerCell + direction;
+            if (!DungeonRules.CanStep(Map,PlayerCell,next)) { LastAction="blocked"; return false; }
             if (Enemies.Exists(enemy => enemy.Cell == next && enemy.Hp > 0)) return Attack();
             if (!Map.Walkable(next)) { LastAction = "blocked"; Log("壁には進めない。"); return false; }
             PlayerCell = next; LastAction = "move";
@@ -67,13 +72,13 @@ namespace LunaEclipse.Dungeon
         {
             if (Dead) return false;
             LastAction = "attack"; LastAttackCell = PlayerCell + Facing;
-            var enemy = Enemies.Find(candidate => candidate.Cell == LastAttackCell.Value && candidate.Hp > 0);
+            var enemy = Enemies.Find(candidate => candidate.Cell == LastAttackCell.Value && candidate.Hp > 0 && DungeonRules.CanStep(Map,PlayerCell,candidate.Cell));
             if (enemy == null) Log("ルナは剣を振った。");
             else
             {
                 enemy.Hp = Mathf.Max(0, enemy.Hp - AttackPower);
                 Log("ルナの攻撃！ "+enemy.Name+"に"+AttackPower+"ダメージ。");
-                if (enemy.Hp == 0) { Enemies.Remove(enemy); Log(enemy.Name+"を倒した！"); }
+                if (enemy.Hp == 0) { Enemies.Remove(enemy); Log(enemy.Name+"を倒した！"); GainExperience(Mathf.Max(2,enemy.MaxHp/2)); }
             }
             CompleteTurn(); return true;
         }
@@ -82,6 +87,23 @@ namespace LunaEclipse.Dungeon
             if (Dead) return false;
             LastAction = "wait"; LastAttackCell = null; Log("ルナはその場で待機した。");
             CompleteTurn(); return true;
+        }
+        public bool CanRest => !Dead && Hp<MaxHp && Satiety>10 && !Enemies.Exists(e=>e.Hp>0 &&
+            (Map.Visible[e.Cell.x,e.Cell.y] || DungeonRules.Distance(e.Cell,PlayerCell)<=3));
+        public bool Rest()
+        {
+            if(!CanRest)return false;
+            LastAction="rest";LastAttackCell=null;CompleteTurn();return true;
+        }
+        void GainExperience(int amount)
+        {
+            Experience=BoundedStat((long)Experience+amount,0);
+            while(Level<DungeonRules.MaximumLevel && Experience>=DungeonRules.ExperienceForLevel(Level+1))
+            { Level++; Hp=Mathf.Min(MaxHp,Hp+DungeonRules.HpPerLevel); Log("Lv."+Level+"に上がった！ 最大HP "+MaxHp+" / 攻撃 "+AttackPower); }
+        }
+        void Recover()
+        {
+            if(!Dead && Satiety>0 && Turns%DungeonRules.RecoveryTurns==0)Hp=Mathf.Min(MaxHp,Hp+1);
         }
         public bool PickUp()
         {
@@ -143,7 +165,7 @@ namespace LunaEclipse.Dungeon
         public bool Descend()
         {
             if (!CanDescend) return false;
-            SpendTurn(); Floor++; EnterFloor();
+            SpendTurn(); Recover(); Floor++; EnterFloor();
             LastAction = "stairs"; LastAttackCell = null;
             Log("B" + Floor + "Fへ降りた。探索を続けよう。");
             return true;
@@ -164,7 +186,7 @@ namespace LunaEclipse.Dungeon
             foreach (var enemy in Enemies)
             {
                 if (Dead) break;
-                if (DungeonRules.Distance(enemy.Cell, PlayerCell) == 1)
+                if (DungeonRules.CanStep(Map, enemy.Cell, PlayerCell))
                 {
                     int damage=Mathf.Max(1,enemy.AttackPower-DefensePower);
                     Hp = Mathf.Max(0, Hp - damage);
@@ -174,6 +196,7 @@ namespace LunaEclipse.Dungeon
                 else if (EnemyAI.Recognizes(Map, enemy.Cell, PlayerCell))
                     enemy.Cell = EnemyAI.NextStep(Map, enemy, PlayerCell, Enemies);
             }
+            Recover();
         }
         private void EnterFloor()
         {
